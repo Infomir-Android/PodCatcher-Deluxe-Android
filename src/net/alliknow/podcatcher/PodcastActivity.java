@@ -270,6 +270,7 @@ public class PodcastActivity extends EpisodeListActivity implements OnBackStackC
     public void onPodcastListLoaded(List<Podcast> podcastList) {
         // Make podcast list show
         podcastListFragment.setPodcastList(podcastList);
+        startActivity(new Intent(this, FirstRunActivity.class));
 
         // Make action bar show number of podcasts
         updateActionBar();
