@@ -45,7 +45,6 @@ import net.alliknow.podcatcher.view.fragments.AuthorizationFragment;
 import net.alliknow.podcatcher.view.fragments.EpisodeListFragment;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -74,9 +73,7 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
     protected ContentSpinner contentSpinner;
 
     /** The current episode set (ordered) */
-    protected SortedSet<Episode> currentEpisodeSet;
-    /** The filtered episode list */
-    protected List<Episode> filteredEpisodeList;
+    private SortedSet<Episode> currentEpisodeSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,7 +139,7 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
         selection.setEpisodeOrderReversed(!selection.isEpisodeOrderReversed());
 
         if (currentEpisodeSet != null)
-            setSortedAndFilteredEpisodeList(currentEpisodeSet);
+            setSortedAndFilteredEpisodeList();
     }
 
     @Override
@@ -150,7 +147,7 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
         selection.setEpisodeFilterEnabled(!selection.isEpisodeFilterEnabled());
 
         if (currentEpisodeSet != null)
-            setSortedAndFilteredEpisodeList(currentEpisodeSet);
+            setSortedAndFilteredEpisodeList();
     }
 
     @Override
@@ -166,7 +163,7 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
         selection.setPodcast(podcast);
         selection.setMode(ContentMode.SINGLE_PODCAST);
 
-        this.currentEpisodeSet = null;
+        this.currentEpisodeSet = new TreeSet<Episode>();
 
         switch (view) {
             case SMALL_LANDSCAPE:
@@ -199,7 +196,6 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
         selection.resetPodcast();
         selection.setMode(ContentMode.ALL_PODCASTS);
 
-        // We need to use a set here to avoid duplicates
         this.currentEpisodeSet = new TreeSet<Episode>();
 
         switch (view) {
@@ -265,7 +261,7 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
     @Override
     public void onDownloadsLoaded(List<Episode> downloads) {
         this.currentEpisodeSet = new TreeSet<Episode>(downloads);
-        setSortedAndFilteredEpisodeList(currentEpisodeSet);
+        setSortedAndFilteredEpisodeList();
 
         updateActionBar();
         updateDivider();
@@ -302,7 +298,7 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
     @Override
     public void onPlaylistLoaded(List<Episode> playlist) {
         this.currentEpisodeSet = new TreeSet<Episode>(playlist);
-        setSortedAndFilteredEpisodeList(playlist);
+        setSortedAndFilteredEpisodeList();
 
         updateActionBar();
         updateDivider();
@@ -378,15 +374,10 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
     @Override
     public void onPodcastLoaded(Podcast podcast) {
         // Update list fragment to show episode list
-        // Select all podcasts
-        if (selection.isAll()) {
-            if (currentEpisodeSet.addAll(podcast.getEpisodes()))
-                setSortedAndFilteredEpisodeList(currentEpisodeSet);
-        } // Select single podcast
-        else if (selection.isSingle() && podcast.equals(selection.getPodcast())) {
-            currentEpisodeSet = new TreeSet<Episode>(podcast.getEpisodes());
+        if (selection.isAll() || selection.isSingle() && podcast.equals(selection.getPodcast())) {
+            currentEpisodeSet.addAll(podcast.getEpisodes());
             addSpecialEpisodes(podcast);
-            setSortedAndFilteredEpisodeList(currentEpisodeSet);
+            setSortedAndFilteredEpisodeList();
         }
 
         // Additionally, if on large device, process clever selection update
@@ -406,27 +397,26 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
     public void onPodcastLoadFailed(Podcast failedPodcast) {
         // The podcast we are waiting for failed to load
         if (selection.isSingle() && failedPodcast.equals(selection.getPodcast())) {
-            this.currentEpisodeSet = new TreeSet<Episode>();
             addSpecialEpisodes(failedPodcast);
-            // We might at least be able to show the downloaded episodes
-            if (currentEpisodeSet != null && currentEpisodeSet.size() > 0) {
-                setSortedAndFilteredEpisodeList(currentEpisodeSet);
 
-                updateActionBar();
-            }
-            else {
-                currentEpisodeSet = null;
+            // We might at least be able to show downloaded/playlisted episodes
+            if (currentEpisodeSet.size() > 0)
+                setSortedAndFilteredEpisodeList(true);
+            else
                 episodeListFragment.showLoadFailed();
-            }
         }
-        // The last podcast failed to load and none of the others had any
-        // episodes to show in the list
-        else if (selection.isAll() && podcastManager.getLoadCount() == 0
-                && (currentEpisodeSet == null || currentEpisodeSet.isEmpty()))
-            episodeListFragment.showLoadFailed();
-        // One of many podcasts failed to load
-        else if (selection.isAll())
-            showToast(getString(R.string.podcast_load_multiple_error, failedPodcast.getName()));
+        // One of potentially many podcasts failed
+        else if (selection.isAll()) {
+            addSpecialEpisodes(failedPodcast);
+            setSortedAndFilteredEpisodeList();
+
+            // The last podcast failed and we have no episodes at all
+            if (podcastManager.getLoadCount() == 0 && currentEpisodeSet.isEmpty())
+                episodeListFragment.showLoadFailed();
+            // One of many podcasts failed to load
+            else
+                showToast(getString(R.string.podcast_load_multiple_error, failedPodcast.getName()));
+        }
 
         // Update UI
         updateActionBar();
@@ -525,8 +515,8 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
             super.onDownloadProgress(episode, percent);
 
         // Check whether the episode is potentially currently displayed
-        if (filteredEpisodeList != null && filteredEpisodeList.contains(episode))
-            episodeListFragment.showProgress(filteredEpisodeList.indexOf(episode), percent);
+        if (currentEpisodeSet.contains(episode))
+            episodeListFragment.showProgress(episode, percent);
     }
 
     @Override
@@ -545,13 +535,10 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
      * Make sure the episode list selection matches current state.
      */
     protected void updateEpisodeListSelection() {
-        if (!view.isSmall()) {
+        if (!view.isSmall())
             // Make sure the episode selection in the list is updated
-            if (filteredEpisodeList != null && filteredEpisodeList.contains(selection.getEpisode()))
-                episodeListFragment.select(filteredEpisodeList.indexOf(selection.getEpisode()));
-            else
-                episodeListFragment.selectNone();
-        } else
+            episodeListFragment.select(selection.getEpisode());
+        else
             episodeListFragment.selectNone();
     }
 
@@ -609,17 +596,29 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
     }
 
     /**
-     * Filter, sort and, set the current episode list to show in the episode
-     * list fragment.
+     * Filter, sort, and set the current episode list to show in the episode
+     * list fragment using {@link #currentEpisodeSet} as the basis.
      */
-    private void setSortedAndFilteredEpisodeList(Collection<Episode> completeList) {
-        filteredEpisodeList = new ArrayList<Episode>(completeList);
+    private void setSortedAndFilteredEpisodeList() {
+        setSortedAndFilteredEpisodeList(false);
+    }
+
+    /**
+     * Filter, sort, and set the current episode list to show in the episode
+     * list fragment using {@link #currentEpisodeSet} as the basis.
+     * 
+     * @param showPodcastLoadFailedWarning Whether the episode list fragment
+     *            should show a warning that some episodes might not be
+     *            displayed.
+     */
+    private void setSortedAndFilteredEpisodeList(boolean showPodcastLoadFailedWarning) {
+        final List<Episode> list = new ArrayList<Episode>(currentEpisodeSet);
 
         // Further refine the episode list if not in playlist mode
         if (!ContentMode.PLAYLIST.equals(selection.getMode())) {
             // Apply the filter
             if (selection.isEpisodeFilterEnabled()) {
-                Iterator<Episode> iterator = filteredEpisodeList.iterator();
+                Iterator<Episode> iterator = list.iterator();
 
                 while (iterator.hasNext())
                     if (episodeManager.getState(iterator.next()))
@@ -630,7 +629,7 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
             // but there is no need for sorting since we already come
             // from a sorted set.
             if (selection.isEpisodeOrderReversed())
-                Collections.reverse(filteredEpisodeList);
+                Collections.reverse(list);
         }
 
         // Make sure the episode list fragment show the right empty view
@@ -639,16 +638,18 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
         else if (ContentMode.PLAYLIST.equals(selection.getMode()))
             episodeListFragment.setEmptyStringId(R.string.playlist_empty);
         else if (selection.isEpisodeFilterEnabled()
-                && filteredEpisodeList.isEmpty() && !completeList.isEmpty())
+                && list.isEmpty() && !currentEpisodeSet.isEmpty())
             episodeListFragment.setEmptyStringId(R.string.episodes_no_new);
         else
             episodeListFragment.setEmptyStringId(R.string.episode_none);
 
         // Make sure the episode list fragment show the right info box
-        if (ContentMode.PLAYLIST.equals(selection.getMode()) && filteredEpisodeList.size() > 1)
+        if (ContentMode.PLAYLIST.equals(selection.getMode()) && list.size() > 1)
             episodeListFragment.setShowTopInfoBox(true, getString(R.string.playlist_swipe_reorder));
+        else if (showPodcastLoadFailedWarning)
+            episodeListFragment.setShowTopInfoBox(true, getString(R.string.podcast_load_error));
         else if (selection.isEpisodeFilterEnabled()) {
-            final int filteredCount = completeList.size() - filteredEpisodeList.size();
+            final int filteredCount = currentEpisodeSet.size() - list.size();
 
             episodeListFragment.setShowTopInfoBox(filteredCount > 0, getResources()
                     .getQuantityString(R.plurals.episodes_filtered, filteredCount, filteredCount));
@@ -656,7 +657,7 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
         else
             episodeListFragment.setShowTopInfoBox(false, null);
 
-        episodeListFragment.setEpisodeList(filteredEpisodeList);
+        episodeListFragment.setEpisodeList(list);
         updateEpisodeListSelection();
 
         // Update other UI
@@ -702,11 +703,11 @@ public abstract class EpisodeListActivity extends EpisodeActivity implements
         if (currentEpisodeSet != null && podcast != null) {
             // Downloads
             for (Episode episode : episodeManager.getDownloads())
-                if (podcast.equals(episode.getPodcast()) && !currentEpisodeSet.contains(episode))
+                if (podcast.equals(episode.getPodcast()))
                     currentEpisodeSet.add(episode);
             // Playlist
             for (Episode episode : episodeManager.getPlaylist())
-                if (podcast.equals(episode.getPodcast()) && !currentEpisodeSet.contains(episode))
+                if (podcast.equals(episode.getPodcast()))
                     currentEpisodeSet.add(episode);
         }
     }

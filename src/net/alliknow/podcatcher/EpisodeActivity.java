@@ -65,7 +65,7 @@ public abstract class EpisodeActivity extends BaseActivity implements
     protected PlayerFragment playerFragment;
 
     /** Play service */
-    protected PlayEpisodeService service;
+    private PlayEpisodeService service;
 
     /** Play update timer */
     private Timer playUpdateTimer = new Timer();
