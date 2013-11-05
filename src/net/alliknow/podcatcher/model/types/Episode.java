@@ -219,10 +219,18 @@ public class Episode implements Comparable<Episode> {
 
             // This should never be zero unless the episodes are equal, since a
             // podcast might publish two episodes at the same pubDate. If it is
-            // (and the episode are not equal) we use the original order from
-            // the feed instead.
-            if (result == 0)
-                return this.equals(another) ? 0 : index - another.getPositionInPodcast();
+            // (and the episodes are not equal) we use the original order from
+            // the feed instead. If all that is not available we simply return
+            // -1 since failing the do so would remove the episode from sets.
+            if (result == 0) {
+                // pubDates are equal, try index
+                if (index >= 0)
+                    return index - another.getPositionInPodcast();
+                else if (this.equals(another))
+                    return 0;
+                else
+                    return -1; // This is the last resort...
+            }
             else
                 return -1 * result;
         }
