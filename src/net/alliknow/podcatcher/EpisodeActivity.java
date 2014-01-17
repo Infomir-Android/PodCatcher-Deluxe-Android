@@ -19,23 +19,28 @@ package net.alliknow.podcatcher;
 
 import static net.alliknow.podcatcher.view.fragments.DeleteDownloadsConfirmationFragment.TAG;
 
+import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.SeekBar;
 
 import net.alliknow.podcatcher.listeners.*;
 import net.alliknow.podcatcher.model.types.Episode;
+import net.alliknow.podcatcher.model.types.MediaType;
 import net.alliknow.podcatcher.services.PlayEpisodeService;
 import net.alliknow.podcatcher.services.PlayEpisodeService.PlayServiceBinder;
 import net.alliknow.podcatcher.view.ControllerView;
+import net.alliknow.podcatcher.view.MenuPlayerView;
+import net.alliknow.podcatcher.view.PlayerView;
 import net.alliknow.podcatcher.view.fragments.DeleteDownloadsConfirmationFragment;
 import net.alliknow.podcatcher.view.fragments.EpisodeFragment;
-import net.alliknow.podcatcher.view.fragments.PlayerFragment;
 
 import java.lang.ref.WeakReference;
 import java.util.Timer;
@@ -69,7 +74,7 @@ public abstract class EpisodeActivity extends BaseActivity implements
     /**
      * Play service
      */
-    private PlayEpisodeService service;
+    protected PlayEpisodeService service;
 
     /**
      * Play update timer
@@ -119,6 +124,8 @@ public abstract class EpisodeActivity extends BaseActivity implements
         }
     }
 
+    protected PlayerView playerView;
+
     /**
      * Get the fragments needed by this activity from the fragment manager and
      * set member fields. Sub-classes should call this after setting their
@@ -155,6 +162,16 @@ public abstract class EpisodeActivity extends BaseActivity implements
         episodeManager.addDownloadListener(this);
         episodeManager.addPlaylistListener(this);
         episodeManager.addStateChangedListener(this);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        getActionBar().setCustomView(R.layout.action_bar);
+        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+
+        playerView = (PlayerView) getActionBar().getCustomView().findViewById(R.id.player_view);
     }
 
     @Override
@@ -350,12 +367,22 @@ public abstract class EpisodeActivity extends BaseActivity implements
         if (service.isLoadedEpisode(selection.getEpisode()))
             service.reset();
             // Play called on unloaded episode
-        else if (selection.isEpisodeSet())
-            service.playEpisode(selection.getEpisode());
+        else if (selection.isEpisodeSet()) {
+            Episode episode = selection.getEpisode();
+            if (episode.getPodcast().getMediaType() == MediaType.VIDEO) {
+                // Video
+                Uri uri = Uri.parse(episode.getMediaUrl().toString());
+                Intent intent = new Intent();
+                intent.setDataAndType(uri, "video/*");
 
-        // Update UI
-        updatePlayerUi();
-//        playerFragment.updateSeekBarSecondaryProgress(0);
+                startActivity(intent);
+            } else {
+                // Audio
+                service.playEpisode(selection.getEpisode());
+                // Update UI
+                updatePlayerUi();
+            }
+        }
     }
 
     @Override
@@ -618,13 +645,15 @@ public abstract class EpisodeActivity extends BaseActivity implements
 
             // Register listener
             service.addPlayServiceListener(EpisodeActivity.this);
-            service.addPlayBackListener(
-                    (PlaybackListener) getActionBar().getCustomView().findViewById(R.id.player_view)
-            );
+            service.addPlayBackListener(playerView);
 
-            ControllerView controllerView = ((ControllerView) findViewById(R.id.controller_view));
-            if (controllerView != null) {
-                controllerView.connectToService(service);
+//            ControllerView controllerView = ((ControllerView) findViewById(R.id.controller_view));
+//            if (controllerView != null) {
+//                controllerView.connectToService(service);
+//            }
+            MenuPlayerView menuPlayerView = (MenuPlayerView) findViewById(R.id.menu_player_view);
+            if (menuPlayerView != null) {
+                menuPlayerView.connectToService(service);
             }
 
             // Update player UI
@@ -638,10 +667,15 @@ public abstract class EpisodeActivity extends BaseActivity implements
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            ControllerView controllerView = ((ControllerView) findViewById(R.id.controller_view));
-            if (controllerView != null) {
-                controllerView.disconnectFromService();
+//            ControllerView controllerView = ((ControllerView) findViewById(R.id.controller_view));
+//            if (controllerView != null) {
+//                controllerView.disconnectFromService();
+//            }
+            MenuPlayerView menuPlayerView = (MenuPlayerView) findViewById(R.id.menu_player_view);
+            if (menuPlayerView != null) {
+                menuPlayerView.disconnectFromService();
             }
+
         }
     };
 }

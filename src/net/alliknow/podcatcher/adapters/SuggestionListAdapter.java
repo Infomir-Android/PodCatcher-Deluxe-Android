@@ -78,6 +78,11 @@ public class SuggestionListAdapter extends PodcatcherBaseListAdapter {
     }
 
     @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+    }
+
+    @Override
     public int getCount() {
         return list.size();
     }

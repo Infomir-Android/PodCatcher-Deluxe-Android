@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import net.alliknow.podcatcher.R;
+import net.alliknow.podcatcher.model.types.Suggestion;
 
 /**
  * A confirmation dialog for the user to make sure he/she really wants an
@@ -48,18 +49,24 @@ public class ConfirmExplicitSuggestionFragment extends DialogFragment {
     /** The callback we are working with */
     private OnConfirmExplicitSuggestionListener listener;
 
+    private Suggestion explicit;
+
     /** The call-back for listeners to implement */
     public interface OnConfirmExplicitSuggestionListener {
 
         /**
          * The user confirmed the addition.
          */
-        public void onConfirmExplicit();
+        public void onConfirmExplicit(Suggestion suggestion);
 
         /**
          * The user cancelled the process.
          */
-        public void onCancelExplicit();
+        public void onCancelExplicit(Suggestion suggestion);
+    }
+
+    public ConfirmExplicitSuggestionFragment(Suggestion suggestion) {
+        this.explicit = suggestion;
     }
 
     @Override
@@ -67,12 +74,13 @@ public class ConfirmExplicitSuggestionFragment extends DialogFragment {
         super.onAttach(activity);
 
         // Make sure our listener is present
-        try {
-            this.listener = (OnConfirmExplicitSuggestionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnConfirmExplicitSuggestionListener");
+        if (activity instanceof OnConfirmExplicitSuggestionListener) {
+            setOnConfirmExplicitSuggestionListener((OnConfirmExplicitSuggestionListener) activity);
         }
+    }
+
+    public void setOnConfirmExplicitSuggestionListener(OnConfirmExplicitSuggestionListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -82,7 +90,7 @@ public class ConfirmExplicitSuggestionFragment extends DialogFragment {
 
         // Define context to use (parent activity might have no theme)
         final ContextThemeWrapper context = new ContextThemeWrapper(getActivity(),
-                android.R.style.Theme_Holo_Light_Dialog);
+                R.style.PodcatcherTheme_Dialog);
 
         // Inflate our custom view
         final LayoutInflater inflater = LayoutInflater.from(context);
@@ -100,7 +108,7 @@ public class ConfirmExplicitSuggestionFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (listener != null)
-                    listener.onConfirmExplicit();
+                    listener.onConfirmExplicit(explicit);
 
                 dismiss();
             }
@@ -116,11 +124,10 @@ public class ConfirmExplicitSuggestionFragment extends DialogFragment {
         });
 
         // Build the dialog
-        final AlertDialog.Builder abuilder = new AlertDialog.Builder(context);
-        abuilder.setTitle(title)
-                .setView(content);
-
-        return abuilder.create();
+        final Dialog dialog = new Dialog(context, R.style.PodcatcherTheme_Dialog);
+        dialog.setTitle(title);
+        dialog.setContentView(content);
+        return dialog;
     }
 
     @Override
@@ -137,6 +144,6 @@ public class ConfirmExplicitSuggestionFragment extends DialogFragment {
         super.onCancel(dialog);
 
         if (listener != null)
-            listener.onCancelExplicit();
+            listener.onCancelExplicit(explicit);
     }
 }

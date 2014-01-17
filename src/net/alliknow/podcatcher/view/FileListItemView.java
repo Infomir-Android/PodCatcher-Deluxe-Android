@@ -33,9 +33,11 @@ import java.io.File;
 public class FileListItemView extends LinearLayout {
 
     /** The icon view */
-    private ImageView iconView;
+    protected ImageView iconView;
     /** The name text view */
-    private TextView nameTextView;
+    protected TextView nameTextView;
+
+    protected File file;
 
     /**
      * Create a file item list view.
@@ -61,9 +63,12 @@ public class FileListItemView extends LinearLayout {
      * @param file File to represent.
      */
     public void show(final File file) {
+
+        this.file = file;
+
         // 1. Set icon
         iconView.setImageResource(
-                file.isDirectory() ? R.drawable.ic_file_folder : R.drawable.ic_file);
+                file.isDirectory() ? R.drawable.ic_directory : R.drawable.ic_file);
 
         // 2. Set the file name as text
         nameTextView.setText(file.getName());

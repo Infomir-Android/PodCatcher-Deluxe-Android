@@ -18,10 +18,30 @@
  */
 -->
 <resources>
-    <style name="PodcatcherTheme" parent="android:Theme.Holo">
-        <item name="android:actionBarStyle">@style/PodcatcherTheme.ActionBar</item>
-        <item name="android:actionBarSize">80dp</item>
-        <item name="android:windowBackground">@drawable/background</item>
+
+    <style name="PodcatcherTheme.PreferenceFragment">
+    </style>
+
+    <style name="PodcatcherTheme.PreferenceFrameLayout">
+        <item name="*android:borderTop">0dp</item>
+        <item name="*android:borderBottom">0dp</item>
+        <item name="*android:borderLeft">0dp</item>
+        <item name="*android:borderRight">0dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+    </style>
+
+    <style name="PodcatcherTheme.Preference">
+        <item name="android:layout">@layout/preference</item>
+    </style>
+
+    <style name="PodcatcherTheme.Preference.CheckBoxPreference">
+        <item name="android:widgetLayout">@layout/preference_checkbox</item>
+    </style>
+
+    <style name="PodcatcherTheme.CheckBox" parent="android:Widget.Holo.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/ic_checkbox</item>
+        <item name="android:background">@drawable/dialog_item_bg</item>
     </style>
 
     <style name="PodcatcherTheme.ActionBar" parent="android:Widget.Holo.ActionBar">
@@ -34,21 +54,26 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
 
-    <style name="PodcatcherTheme.Text" parent="android:TextAppearance">
-        <item name="android:textColor">@color/text_color</item>
+    <style name="PodcatcherTheme.TextAppearance">
+        <item name="android:textSize">@dimen/font_size_default</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
-    <style name="PodcatcherTheme.Text.Title" parent="PodcatcherTheme.Text">
+    <style name="PodcatcherTheme.Text.Large" parent="PodcatcherTheme.TextAppearance">
         <item name="android:textSize">@dimen/font_size_large</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">marquee</item>
     </style>
-    <style name="PodcatcherTheme.Text.Small" parent="PodcatcherTheme.Text">
+
+    <style name="PodcatcherTheme.Text.Small" parent="PodcatcherTheme.TextAppearance">
         <item name="android:textSize">@dimen/font_size_small</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
     </style>
 
-    <style name="PodcatcherTheme.Text.Default" parent="PodcatcherTheme.Text">
+    <style name="PodcatcherTheme.Text.Default" parent="PodcatcherTheme.TextAppearance">
         <item name="android:textSize">@dimen/font_size_default</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
     </style>
 
     <style name="PodcatcherTheme.ProgressBar" parent="android:Widget.Holo.ProgressBar">
@@ -65,6 +90,118 @@
         <item name="android:background">@color/action_bar_progress_bg</item>
         <item name="android:progressDrawable">@android:color/transparent</item>
         <item name="android:thumb">@drawable/action_bar_thumb</item>
+    </style>
+
+    <style name="PodcatcherTheme.Dialog.Title">
+        <item name="android:maxLines">1</item>
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:background">@color/dialog_title_bg</item>
+        <item name="android:textAppearance">@style/PodcatcherTheme.Dialog.Title.TextAppearance</item>
+    </style>
+
+    <style name="PodcatcherTheme.Dialog.Title.TextAppearance">
+        <item name="android:textSize">@dimen/font_size_huge</item>
+        <item name="android:textColor">@color/dialog_title_text</item>
+    </style>
+
+    <style name="PodcatcherTheme.Dialog.TextAppearance">
+        <item name="android:textSize">@dimen/font_size_default</item>
+        <item name="android:textColor">@color/dialog_text_color</item>
+    </style>
+
+    <style name="PodcatcherTheme.Dialog.TextAppearance.Large">
+        <item name="android:textSize">@dimen/font_size_large</item>
+    </style>
+
+    <style name="PodcatcherTheme.Dialog.TextAppearance.Small">
+        <item name="android:textSize">@dimen/font_size_small</item>
+    </style>
+
+    <style name="PodcatcherTheme.Dialog.Subtext">
+        <item name="android:textColor">?android:textColorTertiary</item>
+        <item name="android:textSize">@dimen/font_size_default</item>
+    </style>
+
+    <style name="PodcatcherTheme.DialogButton">
+        <item name="android:background">@drawable/dialog_button_bg</item>
+        <item name="android:textColor">@color/dialog_text_color</item>
+        <item name="android:textSize">@dimen/font_size_default</item>
+        <item name="android:gravity">center</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+    </style>
+
+    <style name="PodcatcherTheme.DialogDivider">
+        <item name="android:src">@color/dialog_item_text_default</item>
+    </style>
+
+    <style name="PodcatcherTheme.DialogDivider.Vertical" parent="PodcatcherTheme.DialogDivider">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">2dp</item>
+    </style>
+
+    <style name="PodcatcherTheme.DialogDivider.Horizontal" parent="PodcatcherTheme.DialogDivider">
+        <item name="android:layout_height">2dp</item>
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="PodcatcherTheme.Dialog.ListViewStyle">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:listSelector">@drawable/dialog_item_bg</item>
+        <item name="android:divider">@color/dialog_list_divider</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
+
+    <style name="PodcatcherTheme.ButtonBar">
+        <item name="android:background">@null</item>
+        <item name="android:divider">@color/dialog_list_divider</item>
+        <item name="android:dividerHorizontal">@color/dialog_list_divider</item>
+
+        <item name="android:paddingTop">0dip</item>
+        <item name="android:paddingLeft">0dip</item>
+        <item name="android:paddingRight">0dip</item>
+        <item name="android:paddingBottom">0dip</item>
+    </style>
+
+    <style name="PodcatcherTheme.Spinner" parent="android:Widget.Spinner">
+        <item name="android:background">@drawable/spinner_bg</item>
+        <item name="android:spinnerMode">dropdown</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:dropDownHeight">400dp</item>
+        <item name="android:dropDownVerticalOffset">0dp</item>
+
+        <item name="android:dropDownSelector">@drawable/dialog_item_bg</item>
+        <item name="android:popupBackground">@drawable/spinner_popup_bg</item>
+    </style>
+
+    <style name="PodcatcherTheme.SpinnerItem">
+        <item name="android:textAppearance">@style/PodcatcherTheme.Dialog.TextAppearance</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+    </style>
+
+    <style name="PodcatcherTheme.DropDownItem">
+        <item name="android:textAppearance">@style/PodcatcherTheme.Dialog.TextAppearance</item>
+        <item name="android:background">@drawable/dialog_item_bg</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <!--<style name="PodcatcherTheme.Spinner.Text">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textAppearance">@style/PodcatcherTheme.Dialog.TextAppearance</item>
+    </style>-->
+
+    <style name="PodcatcherTheme.Dialog.PopupWindow">
+        <item name="android:popupBackground">@drawable/spinner_popup_bg</item>
+        <item name="android:background">@drawable/spinner_popup_bg</item>
+        <item name="android:windowBackground">@drawable/spinner_popup_bg</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:dropDownHeight">300dp</item>
+        <item name="android:maxHeight">300dp</item>
     </style>
 
 </resources>

@@ -99,7 +99,7 @@ public class DeleteDownloadsConfirmationFragment extends DialogFragment {
 
         // Define context to use (parent activity might have no theme)
         final ContextThemeWrapper context = new ContextThemeWrapper(getActivity(),
-                android.R.style.Theme_Holo_Light_Dialog);
+                R.style.PodcatcherTheme_Dialog);
 
         // Inflate our custom view
         final LayoutInflater inflater = LayoutInflater.from(context);
@@ -112,7 +112,6 @@ public class DeleteDownloadsConfirmationFragment extends DialogFragment {
         // Add click listeners
         final Button confirmButton = (Button) content.findViewById(R.id.confirm_button);
         confirmButton.setText(R.string.remove);
-        confirmButton.setBackgroundResource(R.drawable.button_red);
         confirmButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -124,7 +123,6 @@ public class DeleteDownloadsConfirmationFragment extends DialogFragment {
             }
         });
         final Button cancelButton = (Button) content.findViewById(R.id.cancel_button);
-        cancelButton.setBackgroundResource(R.drawable.button_green);
         cancelButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -135,11 +133,10 @@ public class DeleteDownloadsConfirmationFragment extends DialogFragment {
         });
 
         // Build the dialog
-        final AlertDialog.Builder abuilder = new AlertDialog.Builder(context);
-        abuilder.setTitle(title)
-                .setView(content);
-
-        return abuilder.create();
+        Dialog dialog = new Dialog(context, R.style.PodcatcherTheme_Dialog);
+        dialog.setContentView(content);
+        dialog.setTitle(title);
+        return dialog;
     }
 
     @Override

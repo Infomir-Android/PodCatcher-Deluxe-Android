@@ -25,6 +25,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ import net.alliknow.podcatcher.PodcastActivity;
 import net.alliknow.podcatcher.R;
 import net.alliknow.podcatcher.adapters.PodcatcherBaseListAdapter;
 import net.alliknow.podcatcher.model.types.Progress;
+import net.alliknow.podcatcher.view.AnimatedListView;
 import net.alliknow.podcatcher.view.ProgressView;
 
 /**
@@ -102,27 +104,6 @@ public abstract class PodcatcherListFragment extends ListFragment implements Vie
 
         super.setListAdapter(adapter);
     }
-
-    /**
-     * Set the colors to use in the list for selection, checked item etc.
-     * 
-     * @param color The theme color to use for highlighting list items.
-     * @param variantColor The theme color variant to use for pressed and
-     *            checked item.
-     */
-//    public void setThemeColors(int color, int variantColor) {
-//        this.themeColor = color;
-//        this.lightThemeColor = variantColor;
-//
-//        // Set theme colors in adapter
-//        if (adapter != null)
-//            this.adapter.setThemeColors(themeColor, lightThemeColor);
-//        // ...and for the list view
-////        if (viewCreated)
-////            updateListSelector();
-//
-//        refresh();
-//    }
 
     /**
      * Select an item.
@@ -273,24 +254,8 @@ public abstract class PodcatcherListFragment extends ListFragment implements Vie
         }
     }
 
-//    private void updateListSelector() {
-//        // This takes care of the item pressed state and its color
-//        StateListDrawable states = new StateListDrawable();
-//
-//        states.addState(new int[] {
-//                android.R.attr.state_focused
-//        }, new ColorDrawable(lightThemeColor));
-//        states.addState(new int[] {
-//                android.R.attr.state_pressed
-//        }, new ColorDrawable(lightThemeColor));
-//        // Set the states drawable
-//        getListView().setSelector(states);
-//    }
-
-
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-//        updateBackground(hasFocus);
         if (hasFocus) {
             ((PodcastActivity) getActivity()).fragmentSelected(this);
         }
@@ -304,5 +269,22 @@ public abstract class PodcatcherListFragment extends ListFragment implements Vie
             bgResource = R.color.fragment_bg_default;
         }
         getView().setBackgroundColor(getResources().getColor(bgResource));
+    }
+
+    @Override
+    public AnimatedListView getListView() {
+        return (AnimatedListView) super.getListView();
+    }
+
+    public void notifyAnimationStarted(Animation... animations) {
+        for (Animation a : animations) {
+            getListView().notifyAnimationStarted(a);
+        }
+    }
+
+    public void notifyAnimationFinished(Animation... animations) {
+        for (Animation a : animations) {
+            getListView().notifyAnimationFinished(a);
+        }
     }
 }

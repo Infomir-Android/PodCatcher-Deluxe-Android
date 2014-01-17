@@ -33,6 +33,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center_vertical"
+        android:textColor="@color/dialog_text_color"
         android:textSize="@dimen/font_size_default"
         android:singleLine="true"
         android:ellipsize="middle" />

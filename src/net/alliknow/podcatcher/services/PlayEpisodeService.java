@@ -57,6 +57,7 @@ import net.alliknow.podcatcher.listeners.PlaybackListener;
 import net.alliknow.podcatcher.listeners.PlayerListener;
 import net.alliknow.podcatcher.model.EpisodeManager;
 import net.alliknow.podcatcher.model.types.Episode;
+import net.alliknow.podcatcher.model.types.MediaType;
 import net.alliknow.podcatcher.view.fragments.VideoSurfaceProvider;
 
 import java.util.*;
@@ -430,6 +431,7 @@ public class PlayEpisodeService extends Service implements MediaPlayerControl,
             // Make the new episode our current source
             this.currentEpisode = episode;
 
+            // Audio
             // Start playback for new episode
             try {
                 if (player == null) {

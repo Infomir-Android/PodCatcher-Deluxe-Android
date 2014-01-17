@@ -9,14 +9,13 @@ import android.widget.TextView;
 import net.alliknow.podcatcher.R;
 import net.alliknow.podcatcher.listeners.PlaybackListener;
 import net.alliknow.podcatcher.model.types.Episode;
-import net.alliknow.podcatcher.services.PlayEpisodeService;
 
 public class PlayerView extends RelativeLayout implements PlaybackListener {
 
-    private TextView tvTitle;
-    private TextView tvCurrentTime;
-    private TextView tvFullTime;
-    private ProgressBar progressBar;
+    protected TextView tvTitle;
+    protected TextView tvCurrentTime;
+    protected TextView tvFullTime;
+    protected ProgressBar progressBar;
 
     public static String secondsToString(int seconds) {
         if (seconds <= 0) {
@@ -31,6 +30,15 @@ public class PlayerView extends RelativeLayout implements PlaybackListener {
 
     }
 
+    public static int stringToSecond(String string) {
+        String[] parts = string.split(":");
+        int seconds = 0;
+        for (int i = parts.length - 1, k = 1; i >= 0; --i, k *= 60) {
+            seconds += Integer.valueOf(parts[i]) * k;
+        }
+        return seconds;
+    }
+
     public static String unitToString(int unit) {
         if (unit <= 0) {
             return "00";
@@ -40,18 +48,20 @@ public class PlayerView extends RelativeLayout implements PlaybackListener {
 
     public PlayerView(Context context) {
         super(context);
-        View.inflate(context, R.layout.player_view, this);
+        inflateView();
     }
 
     public PlayerView(Context context, AttributeSet attr) {
         super(context, attr);
-        View.inflate(context, R.layout.player_view, this);
+        inflateView();
+    }
+
+    protected void inflateView() {
+        View.inflate(getContext(), R.layout.player_view, this);
     }
 
     @Override
     protected void onFinishInflate() {
-        super.onFinishInflate();
-
         tvTitle = (TextView) findViewById(R.id.tv_title);
         tvCurrentTime = (TextView) findViewById(R.id.tv_current_time);
         tvFullTime = (TextView) findViewById(R.id.tv_full_time);
@@ -71,7 +81,9 @@ public class PlayerView extends RelativeLayout implements PlaybackListener {
                     seconds = duration / 1000;       // convert from milliseconds to seconds
 //                    seconds /= 1000;
                 }
-                tvTitle.setText(episode.getName());
+                if (tvTitle != null) {
+                    tvTitle.setText(episode.getName());
+                }
                 progressBar.setMax(seconds);
                 progressBar.setProgress(0);
                 tvCurrentTime.setText(secondsToString(0));
@@ -120,11 +132,13 @@ public class PlayerView extends RelativeLayout implements PlaybackListener {
         });
     }
 
-    private void setEmptyInfo() {
+    protected void setEmptyInfo() {
         progressBar.setProgress(0);
         tvCurrentTime.setText(secondsToString(0));
         tvFullTime.setText(secondsToString(0));
-        tvTitle.setText("");
+        if (tvTitle != null) {
+            tvTitle.setText("");
+        }
     }
 
 }

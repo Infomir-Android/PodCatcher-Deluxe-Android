@@ -1,8 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<AbsoluteLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+        >
 
-</LinearLayout>
+    <SeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_y="8dp"
+            android:thumb="@null"
+            android:background="@drawable/menu_seekbar_bg1"
+            android:progressDrawable="@android:color/transparent"
+            />
+
+    <ImageButton
+            android:id="@+id/thumb"
+            android:layout_width="24dp"
+            android:layout_height="26dp"
+            android:src="@drawable/menu_seekbar_thumb_default"
+            android:background="@android:color/transparent"
+            android:focusable="false"
+            />
+
+</AbsoluteLayout>

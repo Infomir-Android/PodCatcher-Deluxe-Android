@@ -42,7 +42,7 @@
         android:theme="@style/PodcatcherTheme"
             >
         <activity android:name=".PodcastActivity"
-                  android:hardwareAccelerated="false"
+                  android:hardwareAccelerated="true"
                 >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -102,19 +102,19 @@
         </activity>
         <activity
             android:name=".SettingsActivity"
-            android:theme="@android:style/Theme.Holo.Light.Dialog" />
+            android:theme="@style/PodcatcherTheme.Dialog" />
         <activity
             android:name=".FirstRunActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/PodcatcherTheme.NoDisplay" />
         <activity
             android:name=".AddPodcastActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/PodcatcherTheme.NoDisplay" />
         <activity
             android:name=".AddSuggestionActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/PodcatcherTheme.NoDisplay" />
         <activity
             android:name=".RemovePodcastActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/PodcatcherTheme.NoDisplay" />
         <activity
             android:name=".ImportOpmlActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
@@ -123,7 +123,7 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name=".SelectFileActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/PodcatcherTheme.NoDisplay" />
         <service
             android:name=".services.PlayEpisodeService"
             android:exported="false">

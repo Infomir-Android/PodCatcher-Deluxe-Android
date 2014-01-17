@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ListView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:choiceMode="singleChoice"
-        android:listSelector="@drawable/list_item_bg_focused_fragment"
-        android:divider="@color/divider_color"
-        android:dividerHeight="1dp"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:padding="10dp"
-        />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content"
+              android:layout_height="match_parent"
+        >
+
+    <ListView
+            android:id="@+id/context_menu_list"
+            android:layout_width="@dimen/context_menu_width"
+            android:layout_height="match_parent"
+            android:choiceMode="singleChoice"
+            android:listSelector="@drawable/list_item_bg_focused_fragment"
+            android:divider="@color/divider_color"
+            android:dividerHeight="1dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingRight="10dp"
+            />
+
+    <LinearLayout
+            android:id="@+id/layout_hints"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            />
+
+</LinearLayout>

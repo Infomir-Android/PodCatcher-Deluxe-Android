@@ -42,17 +42,24 @@ import java.util.List;
  * Add podcast from suggestions activity.
  */
 public class AddSuggestionActivity extends BaseActivity implements
-        OnLoadSuggestionListener, OnAddSuggestionListener, OnConfirmExplicitSuggestionListener,
-        OnCancelListener {
+        OnLoadSuggestionListener, OnAddSuggestionListener, OnCancelListener {
 
-    /** The tag we identify our show suggestions fragment with */
+    /**
+     * The tag we identify our show suggestions fragment with
+     */
     public static final String SHOW_SUGGESTIONS_FRAGMENT_TAG = "show_suggestions";
 
-    /** The fragment containing the add suggestion UI */
+    /**
+     * The fragment containing the add suggestion UI
+     */
     private SuggestionFragment suggestionFragment;
-    /** The suggestion manager */
+    /**
+     * The suggestion manager
+     */
     private SuggestionManager suggestionManager;
-    /** Helper the store suggestion await confirmation */
+    /**
+     * Helper the store suggestion await confirmation
+     */
     private Suggestion suggestionToBeConfirmed;
 
     /**
@@ -85,11 +92,6 @@ public class AddSuggestionActivity extends BaseActivity implements
         // No fragment found, create it
         if (suggestionFragment == null) {
             suggestionFragment = new SuggestionFragment();
-            suggestionFragment.setStyle(DialogFragment.STYLE_NORMAL,
-                    android.R.style.Theme_Holo_Light_Dialog);
-
-            // Set theme colors
-            suggestionFragment.setThemeColors(themeColor, lightThemeColor);
 
             // Show the fragment
             suggestionFragment.show(getFragmentManager(), SHOW_SUGGESTIONS_FRAGMENT_TAG);
@@ -133,27 +135,7 @@ public class AddSuggestionActivity extends BaseActivity implements
 
     @Override
     public void onAddSuggestion(Suggestion suggestion) {
-        if (suggestion.isExplicit()) {
-            this.suggestionToBeConfirmed = suggestion;
-
-            // Show confirmation dialog
-            final ConfirmExplicitSuggestionFragment confirmFragment = new ConfirmExplicitSuggestionFragment();
-            confirmFragment.show(getFragmentManager(), ConfirmExplicitSuggestionFragment.TAG);
-        } else {
-            podcastManager.addPodcast(suggestion);
-            suggestionFragment.notifySuggestionAdded();
-        }
-    }
-
-    @Override
-    public void onConfirmExplicit() {
-        podcastManager.addPodcast(suggestionToBeConfirmed);
-        suggestionFragment.notifySuggestionAdded();
-    }
-
-    @Override
-    public void onCancelExplicit() {
-        // Nothing to do here...
+        podcastManager.addPodcast(suggestion);
     }
 
     @Override
@@ -173,6 +155,6 @@ public class AddSuggestionActivity extends BaseActivity implements
 //            return ((UserManager) getSystemService(Context.USER_SERVICE))
 //                    .getUserRestrictions() != null;
 //        else
-            return false;
+        return false;
     }
 }

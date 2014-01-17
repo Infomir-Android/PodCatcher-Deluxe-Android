@@ -22,6 +22,7 @@
     <dimen name="font_size_default">22sp</dimen>
     <dimen name="font_size_small">20sp</dimen>
     <dimen name="font_size_large">24sp</dimen>
+    <dimen name="font_size_huge">28sp</dimen>
     <dimen name="list_item_padding">4dp</dimen>
     <dimen name="episode_view_padding">4dp</dimen>
     <dimen name="suggestion_add_padding">8dp</dimen>
@@ -29,11 +30,11 @@
     <integer name="progress_bar_horizontal_weight">3</integer>
 
     <dimen name="menu_width">300dp</dimen>
-    <integer name="menu_width_delta">300</integer>
-    <integer name="menu_width_minus_delta">-300</integer>
+    <integer name="menu_width_delta">400</integer>
+    <integer name="menu_width_minus_delta">-400</integer>
     <integer name="menu_anim_duration">800</integer>
 
-    <integer name="episode_show_anim_duration">800</integer>
+    <integer name="episode_show_anim_duration">700</integer>
 
     <integer name="podcast_list_width_delta">460</integer>
     <integer name="podcast_list_width_minus_delta">-460</integer>
@@ -44,9 +45,23 @@
     <dimen name="episode_list_expanded_width">680dp</dimen>
     <dimen name="episode_list_collapsed_width">640dp</dimen>
 
+    <dimen name="episode_list_x">@dimen/podcast_list_expanded_width</dimen>
+    <dimen name="episode_x">1230dp</dimen>
+
     <dimen name="episode_list_icons_padding">3dp</dimen>
 
     <dimen name="control_view_button_width">50dp</dimen>
     <dimen name="control_view_button_height">30dp</dimen>
+
+    <dimen name="context_menu_width">52dp</dimen>
+    <dimen name="context_menu_item_size">42dp</dimen>
+
+    <dimen name="ico_rewind_forward_width">16dp</dimen>
+    <dimen name="ico_rewind_forward_height">18dp</dimen>
+
+    <dimen name="menu_seekbar_thumb_focused_width">24dp</dimen>
+    <dimen name="menu_seekbar_thumb_focused_height">26dp</dimen>
+
+    <dimen name="suggestions_filter_height">50dp</dimen>
 
 </resources>

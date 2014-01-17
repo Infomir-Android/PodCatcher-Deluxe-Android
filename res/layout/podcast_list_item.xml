@@ -40,7 +40,7 @@
         android:layout_toRightOf="@id/podcast_logo"
         android:orientation="vertical">
         <TextView
-            style="@style/PodcatcherTheme.Text.Title"
+            style="@style/PodcatcherTheme.Text.Large"
             android:id="@+id/episode_title"
             android:layout_width="match_parent"
             android:layout_height="0dp"

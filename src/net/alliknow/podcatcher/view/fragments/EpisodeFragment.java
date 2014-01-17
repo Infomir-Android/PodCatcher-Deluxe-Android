@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.*;
 import android.view.View.OnTouchListener;
+import android.view.animation.Animation;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
@@ -40,6 +41,8 @@ import net.alliknow.podcatcher.adapters.EpisodeListAdapter;
 import net.alliknow.podcatcher.listeners.OnDownloadEpisodeListener;
 import net.alliknow.podcatcher.listeners.OnRequestFullscreenListener;
 import net.alliknow.podcatcher.model.types.Episode;
+import net.alliknow.podcatcher.services.PlayEpisodeService;
+import net.alliknow.podcatcher.view.AnimatedListView;
 import net.alliknow.podcatcher.view.ContextMenuView;
 import net.alliknow.podcatcher.view.Utils;
 
@@ -51,52 +54,96 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
     /** Delay after the fullscreen hint is take off the video */
 //    private static final int HIDE_FULLSCREEN_HINT_DELAY = 3000;
 
-    /** The listener for the menu item */
+    /**
+     * The listener for the menu item
+     */
     private OnDownloadEpisodeListener downloadListener;
-    /** The listener for the video view */
+    /**
+     * The listener for the video view
+     */
     private OnRequestFullscreenListener fullscreenListener;
-    /** The currently shown episode */
+    /**
+     * The currently shown episode
+     */
     private Episode currentEpisode;
 
-    /** Flag for show download menu item state */
+    private PlayEpisodeService service;
+
+    /**
+     * Flag for show download menu item state
+     */
     private boolean showDownloadMenuItem = false;
-    /** Flag for the state of the download menu item */
+    /**
+     * Flag for the state of the download menu item
+     */
     private boolean downloadMenuItemState = true;
-    /** Flag to indicate whether the episode date should be shown */
+    /**
+     * Flag to indicate whether the episode date should be shown
+     */
     private boolean showEpisodeDate = false;
-    /** Flag for show new icon state */
+    /**
+     * Flag for show new icon state
+     */
     private boolean showNewStateIcon = false;
-    /** Flag for show download icon state */
+    /**
+     * Flag for show download icon state
+     */
     private boolean showDownloadIcon = false;
-    /** Flag for the state of the download icon */
+    /**
+     * Flag for the state of the download icon
+     */
     private boolean downloadIconState = true;
-    /** Flag for the video view visibility */
+    /**
+     * Flag for the video view visibility
+     */
     private boolean showVideo = false;
-    /** Flag for the video fill space option */
+    /**
+     * Flag for the video fill space option
+     */
     private boolean videoFillsSpace = false;
 
-    /** Separator for date and podcast name */
+    /**
+     * Separator for date and podcast name
+     */
     private static final String SEPARATOR = " • ";
 
-    /** Status flag indicating that our view is created */
+    /**
+     * Status flag indicating that our view is created
+     */
     private boolean viewCreated = false;
-    /** Flag for transition animation fix */
+    /**
+     * Flag for transition animation fix
+     */
     private boolean needsLayoutTransitionFix = true;
 
-    /** The download episode menu bar item */
+    /**
+     * The download episode menu bar item
+     */
     private MenuItem downloadMenuItem;
 
-    /** The empty view */
+    /**
+     * The empty view
+     */
     private View emptyView;
-    /** The episode title view */
+    /**
+     * The episode title view
+     */
     private TextView titleView;
-    /** The podcast title view */
+    /**
+     * The podcast title view
+     */
     private TextView subtitleView;
-    /** The state icon view */
+    /**
+     * The state icon view
+     */
     private ImageView stateIconView;
-    /** The download icon view */
+    /**
+     * The download icon view
+     */
     private ImageView downloadIconView;
-    /** The divider view between title and description */
+    /**
+     * The divider view between title and description
+     */
     private View dividerView;
     private ImageView logoImageView;
 
@@ -105,15 +152,21 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
 //    private SurfaceView surfaceView;
     /** The go to fullscreen icon */
 //    private ImageView fullscreenButton;
-    /** The episode description web view */
+    /**
+     * The episode description web view
+     */
     private WebView descriptionView;
+
+    private ViewGroup descriptionLayout;
 
     /** Flag to indicate whether video surface is available */
 //    private boolean videoSurfaceAvailable = false;
     /** Our video surface holder callback to update availability */
 //    private VideoCallback videoCallback = new VideoCallback();
 
-    /** The callback implementation */
+    /**
+     * The callback implementation
+     */
 //    private final class VideoCallback implements SurfaceHolder.Callback {
 //
 //        @Override
@@ -164,7 +217,7 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
 
         return inflater.inflate(R.layout.episode, container, false);
     }
@@ -199,6 +252,7 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
 //        fullscreenButton = (ImageView) getView().findViewById(R.id.fullscreen);
 
         descriptionView = (WebView) getView().findViewById(R.id.episode_description);
+        descriptionLayout = (ViewGroup) getView().findViewById(R.id.description_layout);
 
         contextMenuView = (ContextMenuView) getView().findViewById(R.id.context_menu);
 
@@ -206,8 +260,8 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
 
         // This will make sure we show the right information once the view
         // controls are established (the episode might have been set earlier)
-        if (currentEpisode != null) {
-            setEpisode(currentEpisode);
+        if (currentEpisode != null && service != null) {
+            setEpisode(currentEpisode, service);
             setNewIconVisibility(showNewStateIcon);
             setDownloadIconVisibility(showDownloadIcon, downloadIconState);
             setShowVideoView(showVideo, videoFillsSpace);
@@ -216,6 +270,8 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
         contextMenuView.setOnFocusChangeListener(this);
         descriptionView.setOnFocusChangeListener(this);
         getView().setOnKeyListener(this);
+        descriptionLayout.setOnKeyListener(this);
+        descriptionView.setOnHoverListener(UPDATE_BACKGROUND_ON_HOVER_LISTENER);
 
 //        contextMenuView.setNextFocusDownId(R.id.episode_description);
 //        descriptionView.setNextFocusUpId(R.id.context_menu);
@@ -252,14 +308,14 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
 
     /**
      * Set the displayed episode, all UI will be updated.
-     * 
+     *
      * @param selectedEpisode Episode to show.
      */
-    public void setEpisode(Episode selectedEpisode) {
+    public void setEpisode(Episode selectedEpisode, PlayEpisodeService service) {
         // Set handle to episode in case we are not resumed
         this.currentEpisode = selectedEpisode;
 
-        this.contextMenuView.initialize(selectedEpisode);
+        this.contextMenuView.initialize(selectedEpisode, service);
 
         // If the fragment's view is actually visible and the episode is
         // valid,
@@ -297,6 +353,11 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
             WebSettings settings = descriptionView.getSettings();
             settings.setDefaultFontSize(getResources().getDimensionPixelSize(R.dimen.font_size_default));
             settings.setMinimumFontSize(getResources().getDimensionPixelSize(R.dimen.font_size_small));
+
+            descriptionView.setBackgroundColor(0);
+//            descriptionView.setLayerType(WebView.LAYER_TYPE_NONE, descriptionView.getPaint());
+            updateDescriptionViewBackground(descriptionView.hasFocus());
+
         }
 
         // Update the UI widget's visibility to reflect state
@@ -320,7 +381,40 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
         }
     }
 
+    private final View.OnHoverListener UPDATE_BACKGROUND_ON_HOVER_LISTENER = new View.OnHoverListener() {
+        @Override
+        public boolean onHover(View v, MotionEvent event) {
+            // In the case we use first remote, then mouse -- change background of the description elements.
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_HOVER_ENTER:
+                    updateDescriptionViewBackground(true);
+                    break;
+//                case MotionEvent.ACTION_HOVER_EXIT:
+//                    updateDescriptionViewBackground(false);
+//                    break;
+            }
+            return false;
+        }
+    };
+
+    public void updateDescriptionViewBackground(boolean focused) {
+        int color;
+        if (descriptionView.isInTouchMode()) {
+            color = getResources().getColor(R.color.description_web_view_bg_focused);
+        } else {
+            if (focused) {
+                color = getResources().getColor(R.color.description_web_view_bg_focused);
+            } else {
+                color = getResources().getColor(R.color.description_web_view_bg_unfocused);
+            }
+        }
+        descriptionLayout.setBackgroundColor(color);
+    }
+
     public void focusOnMenu() {
+//        if (contextMenuView != null)
+//            contextMenuView.requestFocus();
+        onFocusChange(contextMenuView, true);
         if (contextMenuView != null)
             contextMenuView.requestFocus();
     }
@@ -330,8 +424,8 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
      * this any time and can expect it to happen on menu creation at the latest.
      * You also have to set the download menu state, <code>true</code> for
      * "Download" and <code>false</code> for "Delete".
-     * 
-     * @param show Whether to show the download menu item.
+     *
+     * @param show     Whether to show the download menu item.
      * @param download State of the download menu item (download / delete)
      */
     public void setDownloadMenuItemVisibility(boolean show, boolean download) {
@@ -352,7 +446,7 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
     /**
      * Set whether the fragment should show the episode state icon to indicate
      * that the episode is new (not marked old).
-     * 
+     *
      * @param show Whether to show the new icon.
      */
     public void setNewIconVisibility(boolean show) {
@@ -367,8 +461,8 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
      * any time and can expect it to happen on fragment resume at the latest.
      * You also have to set the download icon state, <code>true</code> for
      * "is downloaded" and <code>false</code> for "is currently downloading".
-     * 
-     * @param show Whether to show the download menu item.
+     *
+     * @param show       Whether to show the download menu item.
      * @param downloaded State of the download menu item (download / delete)
      */
     public void setDownloadIconVisibility(boolean show, boolean downloaded) {
@@ -387,8 +481,8 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
     /**
      * Set whether the fragment should show the episode date for the episode
      * shown. Change will be reflected upon next call of
-     * {@link #setEpisode(Episode)}
-     * 
+     * {@link #setEpisode(Episode, PlayEpisodeService)}
+     *
      * @param show Whether to show the episode date.
      */
     public void setShowEpisodeDate(boolean show) {
@@ -398,11 +492,11 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
     /**
      * Set whether the fragment should make the video surface visible. If the
      * view is created, the effect will be immediate.
-     * 
+     *
      * @param showVideo Set to <code>true</code> to make the video surface
-     *            appear.
+     *                  appear.
      * @param fillSpace If set to <code>true</code>, the video view will consume
-     *            all the space available and the episode description is hidden.
+     *                  all the space available and the episode description is hidden.
      */
     public void setShowVideoView(boolean showVideo, boolean fillSpace) {
         this.showVideo = showVideo;
@@ -457,9 +551,16 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-//        updateBackground(getView().hasFocus());
         if (hasFocus) {
+//            focusOnMenu();
             ((PodcastActivity) getActivity()).fragmentSelected(this);
+        }
+        if (!v.isInTouchMode()) {
+            if (v == descriptionView) {
+                updateDescriptionViewBackground(hasFocus);
+            } else {
+                updateDescriptionViewBackground(false);
+            }
         }
     }
 
@@ -476,20 +577,16 @@ public class EpisodeFragment extends Fragment implements View.OnFocusChangeListe
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
         switch (keyCode) {
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                if (getActivity().getCurrentFocus() == contextMenuView) {
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                if (contextMenuView.hasFocus()) {
                     descriptionView.requestFocus();
-                    return true;
                 }
-                break;
-            case KeyEvent.KEYCODE_DPAD_UP:
-                if (getActivity().getCurrentFocus() == descriptionView) {
+                return true;
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+                if (descriptionView.hasFocus()) {
                     contextMenuView.requestFocus();
                     return true;
                 }
-                break;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                return true;
         }
         return false;
     }

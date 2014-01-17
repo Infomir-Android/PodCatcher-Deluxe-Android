@@ -66,7 +66,7 @@ public class ShowEpisodeActivity extends EpisodeActivity {
     public void onEpisodeSelected(Episode selectedEpisode) {
         super.onEpisodeSelected(selectedEpisode);
 
-        episodeFragment.setEpisode(selectedEpisode);
+        episodeFragment.setEpisode(selectedEpisode, service);
         episodeFragment.setShowEpisodeDate(true);
     }
 
@@ -95,13 +95,4 @@ public class ShowEpisodeActivity extends EpisodeActivity {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
     }
-
-//    @Override
-//    protected void updateActionBar() {
-//        getActionBar().setTitle(R.string.app_name);
-//        getActionBar().setSubtitle(null);
-//
-//        // Enable navigation
-//        getActionBar().setDisplayHomeAsUpEnabled(true);
-//    }
 }

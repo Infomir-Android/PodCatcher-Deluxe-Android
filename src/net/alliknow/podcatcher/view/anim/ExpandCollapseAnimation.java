@@ -3,40 +3,37 @@ package net.alliknow.podcatcher.view.anim;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.widget.AbsoluteLayout;
 
 public class ExpandCollapseAnimation extends Animation {
 
     private int initialWidth;
-    private int deltaWidth;
+    private int delta;
     private View view;
-    private int direction;
+    private View[] satellites;
 
     public static final int DIRECTION_EXPAND = 0;
     public static final int DIRECTION_COLLAPSE = 1;
 
-    public ExpandCollapseAnimation(View view, int targetWidth, int direction) {
+    public ExpandCollapseAnimation(View view, int targetWidth, int direction, View... satellites) {
         super();
         this.initialWidth = view.getMeasuredWidth();
-        this.deltaWidth = this.initialWidth - targetWidth;
+        this.delta = initialWidth - targetWidth;
         this.view = view;
-        this.direction = direction;
+        this.satellites = satellites;
     }
 
     @Override
     protected void applyTransformation(float interpolatedTime, Transformation t) {
-        int width = initialWidth - (int) (interpolatedTime * deltaWidth);
-//        switch (direction) {
-//            case DIRECTION_EXPAND:
-//                width = (int) (interpolatedTime * deltaWidth);
-//                break;
-//            case DIRECTION_COLLAPSE:
-//                width = (int) ((1.0 - interpolatedTime) * deltaWidth);
-//                break;
-//            default:
-//                throw new IllegalArgumentException();
-//        }
+        int width = initialWidth - (int) (interpolatedTime * delta);
+        int deltaWidth = view.getLayoutParams().width - width;
         view.getLayoutParams().width = width;
         view.requestLayout();
+        for (View satellite : satellites) {
+            AbsoluteLayout.LayoutParams params = (AbsoluteLayout.LayoutParams) satellite.getLayoutParams();
+            params.x -= deltaWidth;
+            satellite.setLayoutParams(params);
+        }
     }
 
     @Override

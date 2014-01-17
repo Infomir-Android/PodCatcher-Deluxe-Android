@@ -20,18 +20,12 @@ package net.alliknow.podcatcher;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Color;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +39,7 @@ import net.alliknow.podcatcher.view.ViewMode;
  * Podcatcher base activity. Defines some common functionality useful for all
  * activities.
  */
-public abstract class BaseActivity extends Activity implements OnSharedPreferenceChangeListener {
+public abstract class BaseActivity extends Activity /*implements OnSharedPreferenceChangeListener */{
 
     /** The podcatcher website URL */
     public static final String PODCATCHER_WEBSITE = "http://www.podcatcher-deluxe.com";
@@ -298,13 +292,6 @@ public abstract class BaseActivity extends Activity implements OnSharedPreferenc
         episodeManager = EpisodeManager.getInstance();
         // Get our preferences and listen to changes
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        preferences.registerOnSharedPreferenceChangeListener(this);
-
-        // Get the theme color
-        themeColor = preferences.getInt(SettingsActivity.KEY_THEME_COLOR,
-                getResources().getColor(R.color.theme_dark));
-        // This will set the light theme color member
-        lightThemeColor = calculateLightThemeColor();
 
         // Create and configure toast member (not shown here, ignore lint
         // warning). We use only one toast object to avoid stacked notifications
@@ -314,60 +301,9 @@ public abstract class BaseActivity extends Activity implements OnSharedPreferenc
             textView.setGravity(Gravity.CENTER);
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Add generic menu items (help, web site...)
-//        getMenuInflater().inflate(R.menu.podcatcher, menu);
-//
-//        return true;
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.settings_menuitem:
-//                startActivity(new Intent(this, SettingsActivity.class));
-//
-//                return true;
-//            case R.id.about_menuitem:
-//                try {
-//                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(PODCATCHER_WEBSITE)));
-//                } catch (ActivityNotFoundException e) {
-//                    // We are in a restricted profile without a browser
-//                    showToast(getString(R.string.no_browser));
-//                }
-//
-//                return true;
-//            case R.id.help_menuitem:
-//                try {
-//                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(PODCATCHER_HELPSITE)));
-//                } catch (ActivityNotFoundException e) {
-//                    // We are in a restricted profile without a browser
-//                    showToast(getString(R.string.no_browser));
-//                }
-//
-//                return true;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        // Unregister the listener
-        preferences.unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(SettingsActivity.KEY_THEME_COLOR)) {
-            // Set new color members
-            themeColor = preferences.getInt(SettingsActivity.KEY_THEME_COLOR, themeColor);
-            lightThemeColor = calculateLightThemeColor();
-
-        }
     }
 
     /**

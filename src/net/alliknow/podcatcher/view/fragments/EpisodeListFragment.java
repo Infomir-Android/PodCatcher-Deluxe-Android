@@ -23,13 +23,13 @@ import android.util.SparseBooleanArray;
 import android.view.*;
 import android.widget.*;
 
-import net.alliknow.podcatcher.ContextMenuEpisodeDialog;
 import net.alliknow.podcatcher.PodcastActivity;
 import net.alliknow.podcatcher.R;
 import net.alliknow.podcatcher.adapters.EpisodeListAdapter;
 import net.alliknow.podcatcher.listeners.*;
 import net.alliknow.podcatcher.model.tasks.remote.LoadPodcastTask.PodcastLoadError;
 import net.alliknow.podcatcher.model.types.Episode;
+import net.alliknow.podcatcher.view.AnimatedListView;
 import net.alliknow.podcatcher.view.EpisodeListItemView;
 import net.alliknow.podcatcher.view.fragments.SwipeReorderListViewTouchListener.ReorderCallback;
 
@@ -40,7 +40,7 @@ import java.util.List;
  * List fragment to display the list of episodes.
  */
 public class EpisodeListFragment extends PodcatcherListFragment implements ReorderCallback,
-        AdapterView.OnItemSelectedListener, View.OnFocusChangeListener {
+        AdapterView.OnItemSelectedListener, View.OnFocusChangeListener, AdapterView.OnItemLongClickListener {
 
     /**
      * The list of episodes we are currently showing.
@@ -63,6 +63,7 @@ public class EpisodeListFragment extends PodcatcherListFragment implements Reord
      * The activity we are in (listens to sorting toggles)
      */
     private OnReverseSortingListener sortingListener;
+    private PlayerListener playerListener;
 
     /**
      * Out swipe to reorder listener
@@ -139,6 +140,8 @@ public class EpisodeListFragment extends PodcatcherListFragment implements Reord
 
     @Override
     public void onAttach(Activity activity) {
+//        if (!(activity instanceof PodcastActivity)) {
+//        }
         super.onAttach(activity);
 
         // Make sure our listener is present
@@ -147,6 +150,8 @@ public class EpisodeListFragment extends PodcatcherListFragment implements Reord
             this.episodeReorderListener = (OnReorderEpisodeListener) activity;
             this.filterListener = (OnToggleFilterListener) activity;
             this.sortingListener = (OnReverseSortingListener) activity;
+            this.playerListener = (PlayerListener) activity;
+
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnSelectEpisodeListener, OnReorderEpisodeListener, " +
@@ -154,11 +159,14 @@ public class EpisodeListFragment extends PodcatcherListFragment implements Reord
         }
     }
 
+//    @Override
+//    public PodcastActivity getActivity() {
+//        return (PodcastActivity) super.getActivity();
+//    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        setHasOptionsMenu(true);
     }
 
     @Override
@@ -200,6 +208,7 @@ public class EpisodeListFragment extends PodcatcherListFragment implements Reord
 
         getListView().setOnItemSelectedListener(this);
         getListView().setOnFocusChangeListener(this);
+        getListView().setOnItemLongClickListener(this);
     }
 
     @Override
@@ -239,10 +248,19 @@ public class EpisodeListFragment extends PodcatcherListFragment implements Reord
         if (getListView().isInTouchMode()) {
             // Find selected episode and alert listener
             episodeSelectionListener.onEpisodeSelected(selectedEpisode);
-//            onFocusChange(list, true);
         }
+        playerListener.onToggleLoad();
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         Episode episode = (Episode) getListAdapter().getItem(position);
+        if (getListView().isInTouchMode()) {
+            // Find selected episode and alert listener
+            episodeSelectionListener.onEpisodeSelected(episode);
+        }
         ((ContextMenuListener) getActivity()).onEpisodeContextMenuOpen(episode);
+        return true;
     }
 
     @Override
@@ -272,31 +290,41 @@ public class EpisodeListFragment extends PodcatcherListFragment implements Reord
 
     @Override
     public boolean canReorder(int position) {
-        return enableSwipeReorder && currentEpisodeList != null && currentEpisodeList.size() > 1;
+        return true;
     }
 
     @Override
-    public void onMoveUp(int[] positions) {
-        if (currentEpisodeList != null && positions.length > 0) {
-            try {
-                final Episode episode = currentEpisodeList.get(positions[0]);
-                episodeReorderListener.onMoveEpisodeUp(episode);
-            } catch (IndexOutOfBoundsException e) {
-                // pass
+    public void onMoveUp(int position) {
+        if (currentEpisodeList != null) {
+            if (getActivity() instanceof PodcastActivity) {
+                Episode episode = currentEpisodeList.get(position);
+                episodeSelectionListener.onEpisodeSelected(episode);
+                ((PodcastActivity) getActivity()).showEpisodeBlock(episode);
             }
         }
+//        if (currentEpisodeList != null && positions.length > 0) {
+//            try {
+//                final Episode episode = currentEpisodeList.get(positions[0]);
+//                episodeReorderListener.onMoveEpisodeUp(episode);
+//            } catch (IndexOutOfBoundsException e) {
+//                // pass
+//            }
+//        }
     }
 
     @Override
-    public void onMoveDown(int[] positions) {
-        if (currentEpisodeList != null && positions.length > 0) {
-            try {
-                final Episode episode = currentEpisodeList.get(positions[0]);
-                episodeReorderListener.onMoveEpisodeDown(episode);
-            } catch (IndexOutOfBoundsException e) {
-                // pass
-            }
+    public void onMoveDown(int position) {
+        if (getActivity() instanceof PodcastActivity) {
+            ((PodcastActivity) getActivity()).hideEpisodeBlock();
         }
+//        if (currentEpisodeList != null && positions.length > 0) {
+//            try {
+//                final Episode episode = currentEpisodeList.get(positions[0]);
+//                episodeReorderListener.onMoveEpisodeDown(episode);
+//            } catch (IndexOutOfBoundsException e) {
+//                // pass
+//            }
+//        }
     }
 
     @Override

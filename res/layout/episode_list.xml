@@ -48,7 +48,7 @@
         android:layout_height="5dp"
         android:indeterminate="true"
         android:visibility="gone" />
-    <ListView
+    <net.alliknow.podcatcher.view.AnimatedListView
         android:id="@id/android:list"
         android:layout_width="match_parent"
         android:layout_height="0dp"

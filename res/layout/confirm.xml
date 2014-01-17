@@ -29,38 +29,29 @@
         android:layout_marginTop="8dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="10dp" />
+    <ImageView style="@style/PodcatcherTheme.DialogDivider.Horizontal" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <Button
             android:id="@+id/cancel_button"
+            style="?android:buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="0dp"
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
-            android:background="@drawable/button_red"
-            android:gravity="center"
             android:text="@string/cancel"
-            android:textColor="@drawable/button_label"
-            android:singleLine="true"
-            android:ellipsize="marquee" />
+                />
+        <ImageView style="@style/PodcatcherTheme.DialogDivider.Vertical" />
         <Button
             android:id="@+id/confirm_button"
+            style="?android:buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:layout_margin="4dp"
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
-            android:background="@drawable/button_green"
-            android:gravity="center"
-            android:textColor="@drawable/button_label"
-            android:singleLine="true"
-            android:ellipsize="marquee" />
+                />
     </LinearLayout>
 </LinearLayout>

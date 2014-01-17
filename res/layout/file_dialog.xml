@@ -18,47 +18,71 @@
  */
 -->
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="center"
-    android:orientation="vertical">
-    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        >
+    <!--<LinearLayout
+            android:id="@+id/back_layout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:focusable="true"
+            android:background="@drawable/dialog_item_bg"
+            android:clickable="true"
+            android:selectable="true"
+            >-->
+        <!--<ImageView
+                android:id="@+id/path_up"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:layout_margin="3dp"
+                android:src="@drawable/ic_back"
+                android:scaleType="center"
+                android:background="@android:color/transparent"
+                />-->
         <TextView
-            android:id="@+id/current_path"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="@dimen/font_size_default"
-            android:singleLine="true"
-            android:ellipsize="start" />
-        <ImageButton 
-            android:id="@+id/path_up"
-            android:layout_width="48dp"
-            android:layout_height="match_parent"
-            android:layout_margin="3dp"
-            android:background="@drawable/button_orange"
-            android:src="@drawable/ic_file_up" />
-    </LinearLayout>
+                android:id="@+id/current_path"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:drawableLeft="@drawable/ic_back"
+                android:background="@drawable/dialog_item_bg"
+                android:drawablePadding="10dp"
+                android:textSize="@dimen/font_size_default"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:ellipsize="start"
+                android:focusable="true"
+                android:clickable="true"
+                />
+    <!--</LinearLayout>-->
     <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider_off" />
-    <ListView
-        android:id="@+id/files"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-    <Button 
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/dialog_list_divider"
+            />
+    <net.alliknow.podcatcher.view.FileListView
+            android:id="@+id/files"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:listSelector="@drawable/dialog_item_bg"
+            android:divider="@color/dialog_list_divider"
+            android:dividerHeight="1dp"
+            android:choiceMode="singleChoice"
+            />
+    <!--<Button
         android:id="@+id/select_file"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_margin="3dp"
         android:textColor="@drawable/button_label"
         android:background="@drawable/button_green"
-        android:text="@string/file_select" />
+        android:text="@string/file_select" />-->
 </LinearLayout>

@@ -37,25 +37,35 @@ import net.alliknow.podcatcher.model.types.Suggestion;
  */
 public class SuggestionListItemView extends RelativeLayout {
 
-    /** Separator for meta data in the UI */
+    /**
+     * Separator for meta data in the UI
+     */
     private static final String METADATA_SEPARATOR = " • ";
 
-    /** The feature icon view */
+    /**
+     * The feature icon view
+     */
     private ImageView featuredIconView;
-    /** The title text view */
+    /**
+     * The title text view
+     */
     private TextView titleTextView;
-    /** The meta information text view */
+    /**
+     * The meta information text view
+     */
     private TextView metaTextView;
     /** The add suggestion button */
-    private Button addButton;
-    /** The description text view */
+//    private Button addButton;
+    /**
+     * The description text view
+     */
     private TextView descriptionTextView;
 
     /**
      * Create a podcast suggestion item list view.
-     * 
+     *
      * @param context Context for the view to live in.
-     * @param attrs View attributes.
+     * @param attrs   View attributes.
      */
     public SuggestionListItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -68,26 +78,26 @@ public class SuggestionListItemView extends RelativeLayout {
         featuredIconView = (ImageView) findViewById(R.id.suggestion_featured);
         titleTextView = (TextView) findViewById(R.id.suggestion_name);
         metaTextView = (TextView) findViewById(R.id.suggestion_meta);
-        addButton = (Button) findViewById(R.id.suggestion_add_button);
+//        addButton = (Button) findViewById(R.id.suggestion_add_button);
         descriptionTextView = (TextView) findViewById(R.id.suggestion_description);
     }
 
     /**
      * Make the view update all its child to represent input given.
-     * 
-     * @param suggestion Podcast suggestion to represent.
-     * @param listener Call-back to alert when the button is pressed.
-     * @param alreadyAdded Whether the suggestion is already added.
+     *
+     * @param suggestion       Podcast suggestion to represent.
+     * @param listener         Call-back to alert when the button is pressed.
+     * @param alreadyAdded     Whether the suggestion is already added.
      * @param languageWildcard Whether the current filter language setting has a
-     *            wildcard.
-     * @param genreWildcard Whether the current filter setting has a genre
-     *            wildcard.
-     * @param typeWildcard Whether the current filter setting has a type
-     *            wildcard.
+     *                         wildcard.
+     * @param genreWildcard    Whether the current filter setting has a genre
+     *                         wildcard.
+     * @param typeWildcard     Whether the current filter setting has a type
+     *                         wildcard.
      */
     public void show(final Suggestion suggestion, final OnAddSuggestionListener listener,
-            boolean alreadyAdded, boolean languageWildcard, boolean genreWildcard,
-            boolean typeWildcard) {
+                     boolean alreadyAdded, boolean languageWildcard, boolean genreWildcard,
+                     boolean typeWildcard) {
         // 1. Set the text to display for title
         titleTextView.setText(suggestion.getName());
 
@@ -99,46 +109,47 @@ public class SuggestionListItemView extends RelativeLayout {
         descriptionTextView.setText(suggestion.getDescription());
 
         // 4. Find and prepare the add button
-        if (alreadyAdded) {
-            addButton.setEnabled(false);
-            addButton.setBackgroundDrawable(null);
-            addButton.setText(null);
-            addButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_checkmark, 0);
-        } else {
-            addButton.setEnabled(true);
-            addButton.setBackgroundResource(R.drawable.button_green);
-            addButton.setText(suggestion.getMediaType().equals(MediaType.AUDIO) ?
-                    R.string.suggestion_listen : R.string.suggestion_watch);
-            addButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-            addButton.setOnClickListener(new View.OnClickListener() {
+//        if (alreadyAdded) {
+//            addButton.setEnabled(false);
+//            addButton.setBackgroundDrawable(null);
+//            addButton.setText(null);
+//            addButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_checkmark, 0);
+//        } else {
+//            addButton.setEnabled(true);
+//            addButton.setBackgroundResource(R.drawable.button_green);
+//            addButton.setText(suggestion.getMediaType().equals(MediaType.AUDIO) ?
+//                    R.string.suggestion_listen : R.string.suggestion_watch);
+//            addButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+//            addButton.setOnClickListener(new View.OnClickListener() {
+//
+//                @Override
+//                public void onClick(View view) {
+//                    listener.onAddSuggestion(suggestion);
+//                }
+//            });
+//
+        this.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onAddSuggestion(suggestion);
 
-                @Override
-                public void onClick(View view) {
-                    listener.onAddSuggestion(suggestion);
-                }
-            });
-
-            this.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!isInTouchMode() && addButton.isEnabled()) {
-                        addButton.callOnClick();
-                    }
-                }
-            });
-        }
+            }
+        });
 
         // 5. Decorate featured and explicit suggestions
         featuredIconView.setVisibility(suggestion.isFeatured() || suggestion.isExplicit() ?
                 VISIBLE : GONE);
         featuredIconView.setImageResource(suggestion.isFeatured() ?
                 R.drawable.ic_suggestion_featured : R.drawable.ic_suggestion_explicit);
-        setBackgroundColor(suggestion.isFeatured() ?
-                getResources().getColor(R.color.featured_suggestion) : Color.TRANSPARENT);
+    }
+
+    @Override
+    public void setPressed(boolean pressed) {
+        super.setPressed(pressed);
     }
 
     private String createClassificationLabel(Suggestion suggestion,
-            boolean languageWildcard, boolean genreWildcard, boolean typeWildcard) {
+                                             boolean languageWildcard, boolean genreWildcard, boolean typeWildcard) {
         final Resources res = getResources();
         String result = "";
 

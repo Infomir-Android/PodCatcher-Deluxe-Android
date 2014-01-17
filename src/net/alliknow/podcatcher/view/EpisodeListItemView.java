@@ -18,7 +18,9 @@
 package net.alliknow.podcatcher.view;
 
 import android.content.Context;
+import android.text.Html;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
 
@@ -95,7 +97,7 @@ public class EpisodeListItemView extends PodcatcherListItemView {
 
         // 1. Set episode title and date
         titleTextView.setText(createTitle(episode));
-        descriptionTextView.setText(episode.getDescription());
+        descriptionTextView.setText(Html.fromHtml(episode.getDescription()));
 
         // 2. Set  and description and make sure it is shown
         dateTextView.setText(createCaption(episode, showPodcastName));

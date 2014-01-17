@@ -70,6 +70,7 @@ public class AuthorizationFragment extends DialogFragment {
 
     @Override
     public void onAttach(Activity activity) {
+        setStyle(R.style.PodcatcherTheme_Dialog, R.style.PodcatcherTheme_Dialog);
         super.onAttach(activity);
 
         // Make sure our listener is present
@@ -85,7 +86,7 @@ public class AuthorizationFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Define context to use (parent activity might have no theme)
         final ContextThemeWrapper context = new ContextThemeWrapper(getActivity(),
-                android.R.style.Theme_Holo_Light_Dialog);
+                R.style.PodcatcherTheme_Dialog);
 
         // Inflate our custom view
         final LayoutInflater inflater = LayoutInflater.from(context);
@@ -119,12 +120,13 @@ public class AuthorizationFragment extends DialogFragment {
             }
         });
 
-        // Build the dialog
-        final AlertDialog.Builder abuilder = new AlertDialog.Builder(context);
-        abuilder.setTitle(R.string.auth_required)
-                .setView(content);
+        content.setMinimumWidth(500);
 
-        return abuilder.create();
+        // Build the dialog
+        Dialog dialog = new Dialog(context, R.style.PodcatcherTheme_Dialog);
+        dialog.setContentView(content);
+        dialog.setTitle(R.string.auth_required);
+        return dialog;
     }
 
     @Override

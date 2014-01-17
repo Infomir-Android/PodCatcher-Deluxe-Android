@@ -137,4 +137,7 @@
 
     <string name="rewind">Rewind</string>
     <string name="forward">Forward</string>
+
+    <string name="select">Select</string>
+    <string name="enter">Enter</string>
 </resources>

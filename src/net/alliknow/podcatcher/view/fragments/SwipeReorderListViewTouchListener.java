@@ -17,15 +17,11 @@
 
 package net.alliknow.podcatcher.view.fragments;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
@@ -44,7 +40,6 @@ public class SwipeReorderListViewTouchListener implements View.OnTouchListener {
     private int mSlop;
     private int mMinFlingVelocity;
     private int mMaxFlingVelocity;
-    private long mAnimationTime;
 
     // Fixed properties
     private ListView mListView;
@@ -68,7 +63,7 @@ public class SwipeReorderListViewTouchListener implements View.OnTouchListener {
     public interface ReorderCallback {
         /**
          * Find out whether a certain position is swipeable.
-         * 
+         *
          * @param position Position in question.
          * @return <code>true</code> if the item at the given position can be
          *         swiped to re-order.
@@ -77,33 +72,31 @@ public class SwipeReorderListViewTouchListener implements View.OnTouchListener {
 
         /**
          * Called on the listener on left swipes.
-         * 
-         * @param positions Indexes flinged.
+         *
+         * @param position Index flinged.
          */
-        public void onMoveUp(int[] positions);
+        public void onMoveUp(int position);
 
         /**
          * Called on the listener if the user swipes items to the right.
-         * 
-         * @param positions Indexes flinged.
+         *
+         * @param position Index flinged.
          */
-        public void onMoveDown(int[] positions);
+        public void onMoveDown(int position);
     }
 
     /**
      * Constructs a new swipe-to-reorder touch listener for the given list view.
-     * 
+     *
      * @param listView The list view whose items should be reorderable.
      * @param callback The callback to trigger when the user has indicated that
-     *            she would like to reorder one or more list items.
+     *                 she would like to reorder one or more list items.
      */
     public SwipeReorderListViewTouchListener(ListView listView, ReorderCallback callback) {
         ViewConfiguration vc = ViewConfiguration.get(listView.getContext());
         mSlop = vc.getScaledTouchSlop();
         mMinFlingVelocity = vc.getScaledMinimumFlingVelocity() * 16;
         mMaxFlingVelocity = vc.getScaledMaximumFlingVelocity();
-        mAnimationTime = listView.getContext().getResources().getInteger(
-                android.R.integer.config_shortAnimTime);
         mListView = listView;
         mCallbacks = callback;
     }
@@ -111,7 +104,7 @@ public class SwipeReorderListViewTouchListener implements View.OnTouchListener {
     /**
      * Enables or disables (pauses or resumes) watching for swipe-to-reorder
      * gestures.
-     * 
+     *
      * @param enabled Whether or not to watch for gestures.
      */
     private void setEnabled(boolean enabled) {
@@ -210,27 +203,13 @@ public class SwipeReorderListViewTouchListener implements View.OnTouchListener {
                 if (dismiss) {
                     // dismiss
                     final View downView = mDownView; // mDownView gets null'd
-                                                     // before animation ends
+                    // before animation ends
                     final int downPosition = mDownPosition;
                     final boolean up = !dismissRight;
                     ++mDismissAnimationRefCount;
-                    mDownView.animate()
-                            .translationX(dismissRight ? mViewWidth : -mViewWidth)
-                            .alpha(0)
-                            .setDuration(mAnimationTime)
-                            .setListener(new AnimatorListenerAdapter() {
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    performReorder(downView, downPosition, up);
-                                }
-                            });
-                } else {
-                    // cancel
-                    mDownView.animate()
-                            .translationX(0)
-                            .alpha(1)
-                            .setDuration(mAnimationTime)
-                            .setListener(null);
+
+                    // TODO: make an actual swipe
+                    performReorder(downView, downPosition, up);
                 }
                 mVelocityTracker.recycle();
                 mVelocityTracker = null;
@@ -256,15 +235,12 @@ public class SwipeReorderListViewTouchListener implements View.OnTouchListener {
                     MotionEvent cancelEvent = MotionEvent.obtain(motionEvent);
                     cancelEvent.setAction(MotionEvent.ACTION_CANCEL |
                             (motionEvent.getActionIndex()
-                            << MotionEvent.ACTION_POINTER_INDEX_SHIFT));
+                                    << MotionEvent.ACTION_POINTER_INDEX_SHIFT));
                     mListView.onTouchEvent(cancelEvent);
                     cancelEvent.recycle();
                 }
 
                 if (mSwiping) {
-                    mDownView.setTranslationX(deltaX);
-                    mDownView.setAlpha(Math.max(0f, Math.min(1f,
-                            1f - 2f * Math.abs(deltaX) / mViewWidth)));
                     return true;
                 }
                 break;
@@ -295,54 +271,9 @@ public class SwipeReorderListViewTouchListener implements View.OnTouchListener {
         // triggers layout on each animation frame; in the future we may want to
         // do something smarter and more performant.
 
-        final ViewGroup.LayoutParams lp = dismissView.getLayoutParams();
-        final int originalHeight = dismissView.getHeight();
-
-        ValueAnimator animator = ValueAnimator.ofInt(originalHeight, 1).setDuration(mAnimationTime);
-
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                --mDismissAnimationRefCount;
-                if (mDismissAnimationRefCount == 0) {
-                    // No active animations, process all pending dismisses.
-                    // Sort by descending position
-                    Collections.sort(mPendingDismisses);
-
-                    int[] dismissPositions = new int[mPendingDismisses.size()];
-                    for (int i = mPendingDismisses.size() - 1; i >= 0; i--) {
-                        dismissPositions[i] = mPendingDismisses.get(i).position;
-                    }
-
-                    if (up)
-                        mCallbacks.onMoveUp(dismissPositions);
-                    else
-                        mCallbacks.onMoveDown(dismissPositions);
-
-                    ViewGroup.LayoutParams lp;
-                    for (PendingReorderData pendingDismiss : mPendingDismisses) {
-                        // Reset view presentation
-                        pendingDismiss.view.setAlpha(1f);
-                        pendingDismiss.view.setTranslationX(0);
-                        lp = pendingDismiss.view.getLayoutParams();
-                        lp.height = originalHeight;
-                        pendingDismiss.view.setLayoutParams(lp);
-                    }
-
-                    mPendingDismisses.clear();
-                }
-            }
-        });
-
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                lp.height = (Integer) valueAnimator.getAnimatedValue();
-                dismissView.setLayoutParams(lp);
-            }
-        });
-
-        mPendingDismisses.add(new PendingReorderData(dismissPosition, dismissView));
-        animator.start();
+        if (up)
+            mCallbacks.onMoveUp(dismissPosition);
+        else
+            mCallbacks.onMoveDown(dismissPosition);
     }
 }

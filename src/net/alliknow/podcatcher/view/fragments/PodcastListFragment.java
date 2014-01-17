@@ -36,6 +36,7 @@ import net.alliknow.podcatcher.listeners.OnSelectPodcastListener;
 import net.alliknow.podcatcher.model.PodcastManager;
 import net.alliknow.podcatcher.model.types.Podcast;
 import net.alliknow.podcatcher.model.types.Progress;
+import net.alliknow.podcatcher.view.AnimatedListView;
 import net.alliknow.podcatcher.view.PodcastListItemView;
 
 import java.util.Collections;
@@ -157,9 +158,6 @@ public class PodcastListFragment extends PodcatcherListFragment
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-//        if (!getListView().isInTouchMode()) {
-//            podcastSelectionListener.onNoPodcastSelected();
-//        }
     }
 
     @Override

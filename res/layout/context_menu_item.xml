@@ -1,25 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="30dp"
+              android:layout_height="30dp"
               android:minHeight="30dp"
               android:gravity="right|center_vertical"
-              android:paddingLeft="10dp"
-              android:paddingRight="10dp"
-              android:paddingTop="5dp"
-              android:paddingBottom="8dp"
-        >
+        >-->
 
-    <TextView
-            style="@style/PodcatcherTheme.Text.Default"
-            android:textColor="@color/text_info_color"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="30dp"
-            android:gravity="right|center_vertical"
-            android:id="@android:id/text1"
-            android:maxLines="2"
-            android:ellipsize="end"
-            />
-</LinearLayout>
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+           android:layout_width="@dimen/context_menu_item_size"
+           android:layout_height="@dimen/context_menu_item_size"
+           android:gravity="right|center_vertical"
+           android:id="@+id/icon"
+           android:padding="10dp"
+        />
+        <!--
+        </LinearLayout>-->

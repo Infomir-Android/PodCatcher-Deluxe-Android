@@ -2,4 +2,37 @@
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:drawable="@drawable/ic_checkbox_on_focused"
+          android:state_checked="true"
+          android:state_focused="true"
+            />
+    <item android:drawable="@drawable/ic_checkbox_on_focused"
+          android:state_checked="true"
+          android:state_selected="true"
+            />
+    <item android:drawable="@drawable/ic_checkbox_on_focused"
+          android:state_checked="true"
+          android:state_pressed="true"
+            />
+
+    <item android:drawable="@drawable/ic_checkbox_off_focused"
+          android:state_checked="false"
+          android:state_focused="true"
+            />
+    <item android:drawable="@drawable/ic_checkbox_off_focused"
+          android:state_checked="false"
+          android:state_selected="true"
+            />
+    <item android:drawable="@drawable/ic_checkbox_off_focused"
+          android:state_checked="false"
+          android:state_pressed="true"
+            />
+
+    <item android:drawable="@drawable/ic_checkbox_on_default"
+          android:state_checked="true"
+            />
+
+    <item android:drawable="@drawable/ic_checkbox_off_default"
+            />
+
 </selector>

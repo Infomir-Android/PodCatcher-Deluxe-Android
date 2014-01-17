@@ -22,31 +22,27 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import net.alliknow.podcatcher.R;
 import net.alliknow.podcatcher.SelectFileActivity.SelectionMode;
 import net.alliknow.podcatcher.adapters.FileListAdapter;
 import net.alliknow.podcatcher.listeners.OnSelectFileListener;
+import net.alliknow.podcatcher.view.DirectoryListItemView;
+import net.alliknow.podcatcher.view.FileListView;
 
 import java.io.File;
 
 /**
  * Fragment for file selection.
  */
-public class SelectFileFragment extends DialogFragment {
+public class SelectFileFragment extends DialogFragment implements OnItemClickListener {
 
     /** The call back we work on */
     private OnSelectFileListener listener;
@@ -64,18 +60,22 @@ public class SelectFileFragment extends DialogFragment {
 
     /** The current path view */
     private TextView currentPathView;
+
     /** The up button */
-    private ImageButton upButton;
+//    private ImageView upButton;
     /** The file list view */
-    private ListView fileListView;
+    private FileListView fileListView;
     /** The select button */
-    private Button selectButton;
+//    private Button selectButton;
+
+//    private ViewGroup backLayout;
 
     /** Status flag indicating that our view is created */
     private boolean viewCreated = false;
 
     @Override
     public void onAttach(Activity activity) {
+        setStyle(R.style.PodcatcherTheme_Dialog, R.style.PodcatcherTheme_Dialog);
         super.onAttach(activity);
 
         // Make sure our listener is present
@@ -85,7 +85,7 @@ public class SelectFileFragment extends DialogFragment {
             throw new ClassCastException(activity.toString()
                     + " must implement OnSelectFileListener");
         }
-    };
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -109,8 +109,7 @@ public class SelectFileFragment extends DialogFragment {
         updateDialogTitle();
 
         currentPathView = (TextView) view.findViewById(R.id.current_path);
-        upButton = (ImageButton) view.findViewById(R.id.path_up);
-        upButton.setOnClickListener(new OnClickListener() {
+        currentPathView.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -121,43 +120,51 @@ public class SelectFileFragment extends DialogFragment {
                     setPath(up);
             }
         });
-
-        fileListView = (ListView) view.findViewById(R.id.files);
-        fileListView.setOnItemClickListener(new OnItemClickListener() {
-
+        currentPathView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final File subFile = (File) fileListView.getAdapter().getItem(position);
-
-                // Switch down to sub directory
-                if (subFile.isDirectory())
-                    setPath(subFile);
-                else if (SelectionMode.FILE.equals(selectionMode)) {
-                    // Mark file as selected
-                    selectedPosition = position;
-
-                    selectButton.setEnabled(true);
-                    ((FileListAdapter) fileListView.getAdapter()).setSelectedPosition(position);
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    fileListView.clearAll();
+                } else {
+                    fileListView.requestFocus();
+                    fileListView.restoreSelection();
                 }
             }
         });
-//        updateListSelector();
 
-        selectButton = (Button) view.findViewById(R.id.select_file);
-        selectButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (SelectionMode.FOLDER.equals(selectionMode))
-                    listener.onFileSelected(currentPath);
-                else if (selectedPosition >= 0)
-                    listener.onFileSelected(
-                            (File) fileListView.getAdapter().getItem(selectedPosition));
-            }
-        });
+        fileListView = (FileListView) view.findViewById(R.id.files);
+        fileListView.setOnItemClickListener(this);
 
         viewCreated = true;
     }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        final File subFile = (File) fileListView.getAdapter().getItem(position);
+
+        // Switch down to sub directory
+        if (subFile.isDirectory())
+            setPath(subFile);
+        else if (SelectionMode.FILE.equals(selectionMode)) {
+            // Mark file as selected
+            selectedPosition = position;
+            if (selectedPosition >= 0)
+                listener.onFileSelected(
+                        (File) fileListView.getAdapter().getItem(selectedPosition));
+        }
+    }
+
+    private final DirectoryListItemView.DirectoryListener DIRECTORY_LISTENER = new DirectoryListItemView.DirectoryListener() {
+        @Override
+        public void onDirectoryEntered(File file) {
+            setPath(file);
+        }
+
+        @Override
+        public void onDirectorySelected(File file) {
+            listener.onFileSelected(file);
+        }
+    };
 
     @Override
     public void onResume() {
@@ -181,26 +188,6 @@ public class SelectFileFragment extends DialogFragment {
     }
 
     /**
-     * Set the colors to use in the list for selection, checked item etc.
-     * 
-     * @param color The theme color to use for highlighting list items.
-     * @param variantColor The theme color variant to use for pressed and
-     *            checked items.
-     */
-    public void setThemeColors(int color, int variantColor) {
-        this.themeColor = color;
-        this.lightThemeColor = variantColor;
-
-        // Set theme colors in adapter
-        if (fileListView != null && fileListView.getAdapter() != null)
-            ((FileListAdapter) fileListView.getAdapter())
-                    .setThemeColors(themeColor, lightThemeColor);
-        // ...and for the list view
-//        if (viewCreated)
-//            updateListSelector();
-    }
-
-    /**
      * Set the directory path for the fragment to show. You can call this
      * anytime and assume the latest call to take effect {@link #onResume()}.
      * 
@@ -215,23 +202,26 @@ public class SelectFileFragment extends DialogFragment {
                 selectedPosition = -1;
 
                 currentPathView.setText(path.getAbsolutePath());
-                upButton.setEnabled(path.getParent() != null);
+                setBackEnabled(path.getParent() != null);
 
                 final FileListAdapter adapter =
-                        new FileListAdapter(getDialog().getContext(), path);
+                        new FileListAdapter(getDialog().getContext(), path, selectionMode);
+                if (selectionMode == SelectionMode.FOLDER) {
+                    adapter.setDirectoryListener(DIRECTORY_LISTENER);
+                }
                 adapter.setThemeColors(themeColor, lightThemeColor);
                 fileListView.setAdapter(adapter);
-
-                if (SelectionMode.FOLDER.equals(selectionMode))
-                    selectButton.setEnabled(true);
-                else
-                    selectButton.setEnabled(false);
 
                 listener.onDirectoryChanged(path);
             }
             else
                 listener.onAccessDenied(path);
         }
+    }
+
+    private void setBackEnabled(boolean enabled) {
+        currentPathView.setEnabled(enabled);
+        currentPathView.setFocusable(enabled);
     }
 
     /**
@@ -254,18 +244,4 @@ public class SelectFileFragment extends DialogFragment {
         else
             getDialog().setTitle(R.string.file_select_file);
     }
-
-//    private void updateListSelector() {
-//        // This takes care of the item pressed state and its color
-//        StateListDrawable states = new StateListDrawable();
-//
-//        states.addState(new int[] {
-//                android.R.attr.state_focused
-//        }, new ColorDrawable(lightThemeColor));
-//        states.addState(new int[] {
-//                android.R.attr.state_pressed
-//        }, new ColorDrawable(lightThemeColor));
-//        // Set the states drawable
-//        fileListView.setSelector(states);
-//    }
 }

@@ -2,4 +2,21 @@
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:drawable="@color/directory_button_dark"
+          android:state_focused="true"
+            />
+
+    <item android:drawable="@color/directory_button_dark"
+          android:state_pressed="true"
+            />
+
+    <item>
+        <shape>
+            <solid android:color="@android:color/transparent" />
+            <stroke android:color="@color/directory_button_dark"
+                    android:width="1dp"
+                    />
+        </shape>
+    </item>
+
 </selector>

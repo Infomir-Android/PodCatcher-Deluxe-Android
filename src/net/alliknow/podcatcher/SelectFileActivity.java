@@ -74,8 +74,8 @@ public class SelectFileActivity extends BaseActivity implements OnSelectFileList
         // No fragment found, create it
         if (selectFileFragment == null) {
             selectFileFragment = new SelectFileFragment();
-            selectFileFragment.setStyle(DialogFragment.STYLE_NORMAL,
-                    android.R.style.Theme_Holo_Light_Dialog);
+//            selectFileFragment.setStyle(DialogFragment.STYLE_NORMAL,
+//                    android.R.style.Theme_Holo_Light_Dialog);
         }
 
         // Use getIntent() to configure selection mode
@@ -98,9 +98,6 @@ public class SelectFileActivity extends BaseActivity implements OnSelectFileList
 
             selectFileFragment.setPath(podcastDir);
         }
-
-        // Set theme colors
-        selectFileFragment.setThemeColors(themeColor, lightThemeColor);
 
         // Show the fragment
         selectFileFragment.show(getFragmentManager(), SELECT_FILE_FRAGMENT_TAG);

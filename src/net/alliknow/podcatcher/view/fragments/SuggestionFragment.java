@@ -22,23 +22,18 @@ import static android.view.View.VISIBLE;
 
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.Intent;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.view.*;
+import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ListView;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import net.alliknow.podcatcher.R;
 import net.alliknow.podcatcher.adapters.*;
@@ -57,54 +52,86 @@ import java.util.Locale;
 /**
  * Fragment to show podcast suggestions.
  */
-public class SuggestionFragment extends DialogFragment {
+public class SuggestionFragment extends DialogFragment implements OnAddSuggestionListener,
+        ConfirmExplicitSuggestionFragment.OnConfirmExplicitSuggestionListener {
 
-    /** The filter wildcard */
+    /**
+     * The filter wildcard
+     */
     public static final String FILTER_WILDCARD = "ALL";
 
-    /** Mail address to send new suggestions to */
+    /**
+     * Mail address to send new suggestions to
+     */
     private static final String SUGGESTION_MAIL_ADDRESS = "suggestion@podcatcher-deluxe.com";
-    /** Subject for mail with new suggestions */
+    /**
+     * Subject for mail with new suggestions
+     */
     private static final String SUGGESTION_MAIL_SUBJECT = "A proposal for a podcast suggestion in the Podcatcher Android apps";
 
-    /** The call back we work on */
+    /**
+     * The call back we work on
+     */
     private OnAddSuggestionListener listener;
-    /** The list of suggestions to show */
+    /**
+     * The list of suggestions to show
+     */
     private List<Suggestion> suggestionList;
-    /** The suggestion list adapter */
+    /**
+     * The suggestion list adapter
+     */
     private SuggestionListAdapter suggestionListAdapter;
 
-    /** The language filter */
+    /**
+     * The language filter
+     */
     private Spinner languageFilter;
-    /** The genre filter */
+    /**
+     * The genre filter
+     */
     private Spinner genreFilter;
-    /** The media type filter */
+    /**
+     * The media type filter
+     */
     private Spinner mediaTypeFilter;
-    /** The progress view */
+    /**
+     * The progress view
+     */
     private ProgressView progressView;
-    /** The suggestions list view */
+    /**
+     * The suggestions list view
+     */
     private ListView suggestionsListView;
-    /** The no suggestions view */
+    /**
+     * The no suggestions view
+     */
     private TextView noSuggestionsView;
-    /** The send a suggestion view */
-    private TextView sendSuggestionView;
+    /**
+     * The send a suggestion view
+     */
+    private Button sendSuggestionView;
 
-    /** Bundle key for language filter position */
+    /**
+     * Bundle key for language filter position
+     */
     private static final String LANGUAGE_FILTER_POSITION = "language_filter_position";
-    /** Bundle key for genre filter position */
+    /**
+     * Bundle key for genre filter position
+     */
     private static final String GENRE_FILTER_POSITION = "genre_filter_position";
-    /** Bundle key for media type filter position */
+    /**
+     * Bundle key for media type filter position
+     */
     private static final String MEDIATYPE_FILTER_POSITION = "mediatype_filter_position";
 
-    /** The theme color to use for highlighting list items */
-    protected int themeColor;
-    /** The theme color variant to use for pressed and checked items */
-    protected int lightThemeColor;
-
-    /** Status flag indicating that our view is created */
+    /**
+     * Status flag indicating that our view is created
+     */
     private boolean viewCreated = false;
 
-    /** The listener to update the list on filter change */
+    /**
+     * The listener to update the list on filter change
+     */
     private final OnItemSelectedListener selectionListener = new OnItemSelectedListener() {
 
         @Override
@@ -120,6 +147,7 @@ public class SuggestionFragment extends DialogFragment {
 
     @Override
     public void onAttach(Activity activity) {
+        setStyle(R.style.PodcatcherTheme_Dialog, R.style.PodcatcherTheme_Dialog);
         super.onAttach(activity);
 
         // Make sure our listener is present
@@ -129,11 +157,11 @@ public class SuggestionFragment extends DialogFragment {
             throw new ClassCastException(activity.toString()
                     + " must implement OnAddSuggestionListener");
         }
-    };
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         // Inflate the layout
         final View layout = inflater.inflate(R.layout.suggestions, container, false);
 
@@ -143,7 +171,8 @@ public class SuggestionFragment extends DialogFragment {
 
         // Adjust the layout minimum height so the dialog always has the same
         // height and does not bounce around depending on the list content
-        layout.setMinimumHeight((int) (displayRectangle.height() * 0.9f));
+        layout.setMinimumHeight((int) (displayRectangle.height() * 0.5f));
+        layout.setLayoutParams(new LinearLayout.LayoutParams(500, 500));
 
         return layout;
     }
@@ -183,12 +212,22 @@ public class SuggestionFragment extends DialogFragment {
         });
         noSuggestionsView = (TextView) view.findViewById(R.id.suggestion_none);
 
-        sendSuggestionView = (TextView) view.findViewById(R.id.suggestion_send);
-        sendSuggestionView.setText(Html.fromHtml("<a href=\"mailto:" + SUGGESTION_MAIL_ADDRESS +
-                "?subject=" + SUGGESTION_MAIL_SUBJECT + "\">" +
-                getString(R.string.suggestions_send) + "</a>"));
-        sendSuggestionView.setMovementMethod(LinkMovementMethod.getInstance());
-        updateListSelector();
+        sendSuggestionView = (Button) view.findViewById(R.id.suggestion_send);
+//        sendSuggestionView.setText(Html.fromHtml("<a href=\"mailto:" + SUGGESTION_MAIL_ADDRESS +
+//                "?subject=" + SUGGESTION_MAIL_SUBJECT + "\">" +
+//                getString(R.string.suggestions_send) + "</a>"));
+        sendSuggestionView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("message/rfc822");
+                intent.putExtra(Intent.EXTRA_EMAIL, new String[] { SUGGESTION_MAIL_ADDRESS });
+                intent.putExtra(Intent.EXTRA_SUBJECT, SUGGESTION_MAIL_SUBJECT);
+                startActivity(intent);
+            }
+        });
+//        sendSuggestionView.setMovementMethod(LinkMovementMethod.getInstance());
+//        updateListSelector();
 
         viewCreated = true;
 
@@ -201,6 +240,12 @@ public class SuggestionFragment extends DialogFragment {
         } // Initial opening of the dialog
         else
             setInitialFilterSelection();
+
+//        WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
+//        getDialog().getWindow().setLayout(
+//                (int) (params.width * 0.9),
+//                (int) (params.height * 0.5)
+//        );
     }
 
     @Override
@@ -231,9 +276,35 @@ public class SuggestionFragment extends DialogFragment {
         super.onCancel(dialog);
     }
 
+    @Override
+    public void onAddSuggestion(Suggestion suggestion) {
+        if (suggestion.isExplicit()) {
+            // Show confirmation dialog
+            final ConfirmExplicitSuggestionFragment confirmFragment = new ConfirmExplicitSuggestionFragment(suggestion);
+            confirmFragment.setOnConfirmExplicitSuggestionListener(this);
+            confirmFragment.show(getFragmentManager(), ConfirmExplicitSuggestionFragment.TAG);
+        } else {
+            listener.onAddSuggestion(suggestion);
+            this.suggestionList.remove(suggestion);
+            updateList(true);
+        }
+    }
+
+    @Override
+    public void onConfirmExplicit(Suggestion suggestion) {
+        listener.onAddSuggestion(suggestion);
+        this.suggestionList.remove(suggestion);
+        updateList(true);
+    }
+
+    @Override
+    public void onCancelExplicit(Suggestion suggestion) {
+        // pass
+    }
+
     /**
      * Set list of suggestions to show and update the UI.
-     * 
+     *
      * @param suggestions Podcasts to show.
      */
     public void setList(List<Suggestion> suggestions) {
@@ -246,17 +317,8 @@ public class SuggestionFragment extends DialogFragment {
     }
 
     /**
-     * Notify the fragment that a suggestion as been added and the list might
-     * have to update.
-     */
-    public void notifySuggestionAdded() {
-        if (suggestionListAdapter != null)
-            suggestionListAdapter.notifyDataSetChanged();
-    }
-
-    /**
      * Show load suggestions progress.
-     * 
+     *
      * @param progress Progress information to give.
      */
     public void showLoadProgress(Progress progress) {
@@ -281,7 +343,7 @@ public class SuggestionFragment extends DialogFragment {
             languageFilter.setSelection(1);
         else if (currentLocale.getLanguage().equalsIgnoreCase("es"))
             languageFilter.setSelection(2);
-        // No filter for this language, set to "all"
+            // No filter for this language, set to "all"
         else
             languageFilter.setSelection(0);
 
@@ -292,6 +354,16 @@ public class SuggestionFragment extends DialogFragment {
     }
 
     private void updateList() {
+        updateList(false);
+    }
+
+    private void updateList(boolean gracefully) {
+
+        int selection = -1;
+        if (gracefully) {
+            selection = suggestionsListView.getSelectedItemPosition();
+        }
+
         // Filter the suggestion list
         if (suggestionList != null) {
             // Resulting list
@@ -303,7 +375,7 @@ public class SuggestionFragment extends DialogFragment {
 
             // Set filtered list
             suggestionListAdapter = new SuggestionListAdapter(
-                    getDialog().getContext(), filteredSuggestionList, listener);
+                    getDialog().getContext(), filteredSuggestionList, this);
             suggestionListAdapter.setFilterConfiguration(
                     languageFilter.getSelectedItemPosition() == 0,
                     genreFilter.getSelectedItemPosition() == 0,
@@ -314,19 +386,26 @@ public class SuggestionFragment extends DialogFragment {
             if (filteredSuggestionList.isEmpty()) {
                 suggestionsListView.setVisibility(GONE);
                 noSuggestionsView.setVisibility(VISIBLE);
-            }
-            else {
+            } else {
                 noSuggestionsView.setVisibility(GONE);
                 suggestionsListView.setVisibility(VISIBLE);
             }
 
             progressView.setVisibility(GONE);
+
+            if (gracefully) {
+                if (suggestionListAdapter.getCount() > selection) {
+                    suggestionsListView.setSelection(selection);
+                }
+            } else {
+                suggestionsListView.setSelection(selection - 1);
+            }
         }
     }
 
     /**
      * Checks whether the given podcast matches the filter selection.
-     * 
+     *
      * @param suggestion Podcast to check.
      * @return <code>true</code> if the podcast fits.
      */
@@ -334,54 +413,54 @@ public class SuggestionFragment extends DialogFragment {
         return (languageFilter.getSelectedItemPosition() == 0 ||
                 ((Language) languageFilter.getSelectedItem()).equals(suggestion.getLanguage())) &&
                 (genreFilter.getSelectedItemPosition() == 0 ||
-                ((Genre) genreFilter.getSelectedItem()).equals(suggestion.getGenre())) &&
+                        ((Genre) genreFilter.getSelectedItem()).equals(suggestion.getGenre())) &&
                 (mediaTypeFilter.getSelectedItemPosition() == 0 ||
-                ((MediaType) mediaTypeFilter.getSelectedItem()).equals(suggestion.getMediaType()));
+                        ((MediaType) mediaTypeFilter.getSelectedItem()).equals(suggestion.getMediaType()));
     }
 
     /**
      * Set the colors to use in the list for selection, checked item etc.
      *
-     * @param color The theme color to use for highlighting list items.
-     * @param variantColor The theme color variant to use for pressed and
-     *            checked items.
+     //     * @param color The theme color to use for highlighting list items.
+     //     * @param variantColor The theme color variant to use for pressed and
+     //     *            checked items.
      */
-    public void setThemeColors(int color, int variantColor) {
-        this.themeColor = color;
-        this.lightThemeColor = variantColor;
+//    public void setThemeColors(int color, int variantColor) {
+//        this.themeColor = color;
+//        this.lightThemeColor = variantColor;
+//
+//        // Set theme colors in adapter
+//        if (suggestionsListView != null && suggestionsListView.getAdapter() != null)
+//            ((FileListAdapter) suggestionsListView.getAdapter())
+//                    .setThemeColors(themeColor, lightThemeColor);
+//        // ...and for the list view
+////        if (viewCreated)
+////            updateListSelector();
+//    }
 
-        // Set theme colors in adapter
-        if (suggestionsListView != null && suggestionsListView.getAdapter() != null)
-            ((FileListAdapter) suggestionsListView.getAdapter())
-                    .setThemeColors(themeColor, lightThemeColor);
-        // ...and for the list view
-        if (viewCreated)
-            updateListSelector();
-    }
+//    private void updateListSelector() {
+//
+//        // Set the states drawable
+//        suggestionsListView.setSelector(getNewStateList());
+//
+//        sendSuggestionView.setBackgroundDrawable(getNewStateList());
+//
+//        languageFilter.setBackgroundDrawable(getNewStateList());
+//        genreFilter.setBackgroundDrawable(getNewStateList());
+//        mediaTypeFilter.setBackgroundDrawable(getNewStateList());
+//    }
 
-    private void updateListSelector() {
-
-        // Set the states drawable
-        suggestionsListView.setSelector(getNewStateList());
-
-        sendSuggestionView.setBackgroundDrawable(getNewStateList());
-
-        languageFilter.setBackgroundDrawable(getNewStateList());
-        genreFilter.setBackgroundDrawable(getNewStateList());
-        mediaTypeFilter.setBackgroundDrawable(getNewStateList());
-    }
-
-    private StateListDrawable getNewStateList() {
-        // This takes care of the item pressed state and its color
-        StateListDrawable states = new StateListDrawable();
-
-        states.addState(new int[] {
-                android.R.attr.state_focused
-        }, new ColorDrawable(lightThemeColor));
-        states.addState(new int[] {
-                android.R.attr.state_pressed
-        }, new ColorDrawable(lightThemeColor));
-        states.addState(new int[] {}, getActivity().getResources().getDrawable(android.R.color.transparent));
-        return states;
-    }
+//    private StateListDrawable getNewStateList() {
+//        // This takes care of the item pressed state and its color
+//        StateListDrawable states = new StateListDrawable();
+//
+//        states.addState(new int[] {
+//                android.R.attr.state_focused
+//        }, new ColorDrawable(lightThemeColor));
+//        states.addState(new int[] {
+//                android.R.attr.state_pressed
+//        }, new ColorDrawable(lightThemeColor));
+//        states.addState(new int[] {}, getActivity().getResources().getDrawable(android.R.color.transparent));
+//        return states;
+//    }
 }

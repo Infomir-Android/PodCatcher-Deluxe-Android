@@ -20,7 +20,6 @@ package net.alliknow.podcatcher;
 import static net.alliknow.podcatcher.EpisodeListActivity.PODCAST_URL_KEY;
 import static net.alliknow.podcatcher.view.fragments.AuthorizationFragment.USERNAME_PRESET_KEY;
 
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
@@ -83,8 +82,8 @@ public class AddPodcastActivity extends BaseActivity implements OnLoadPodcastLis
         // No fragment found, create it
         if (addPodcastFragment == null) {
             addPodcastFragment = new AddPodcastFragment();
-            addPodcastFragment.setStyle(DialogFragment.STYLE_NORMAL,
-                    android.R.style.Theme_Holo_Light_Dialog);
+//            addPodcastFragment.setStyle(DialogFragment.STYLE_NORMAL,
+//                    android.R.style.Theme_Holo_Light_Dialog);
 
             // Show the fragment
             addPodcastFragment.show(getFragmentManager(), ADD_PODCAST_FRAGMENT_TAG);

@@ -17,42 +17,137 @@
  * along with PodCatcher Deluxe. If not, see <http://www.gnu.org/licenses/>.
  */
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical"
               android:paddingLeft="10dp"
-              android:paddingRight="10dp"
         >
 
-    <TextView
-            android:id="@id/android:empty"
-            style="@style/PodcatcherTheme.Text.Small"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/episode_none_selected" />
-    <!--<RelativeLayout
-        android:id="@+id/episode_video" 
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:visibility="gone">
-        <SurfaceView 
-            android:id="@+id/surface"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+    <LinearLayout
+            android:id="@+id/description_layout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="@dimen/context_menu_width"
+            android:orientation="vertical"
+            android:background="@android:color/white"
+            android:paddingRight="10dp"
+            android:layerType="software"
+            >
+
+        <TextView
+                android:id="@id/android:empty"
+                style="@style/PodcatcherTheme.Text.Small"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/episode_none_selected"/>
+
         <ImageView
-            android:id="@+id/fullscreen"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_centerInParent="true"
-            android:src="@drawable/ic_media_fullscreen" />
-    </RelativeLayout>-->
+                android:id="@+id/logo"
+                android:layout_width="wrap_content"
+                android:layout_height="208dp"
+                android:layout_gravity="center_horizontal"
+                android:maxWidth="440dp"
+                android:visibility="gone"
+                />
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+            <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                <TextView
+                        android:id="@+id/episode_title"
+                        style="@style/PodcatcherTheme.Text.Large"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="28dp"
+                        android:paddingLeft="@dimen/episode_view_padding"
+                        android:textColor="@color/text_focused"
+                        android:visibility="gone"/>
+                <TextView
+                        android:id="@+id/podcast_title"
+                        style="@style/PodcatcherTheme.Text.Default"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="20dp"
+                        android:paddingLeft="@dimen/episode_view_padding"
+                        android:visibility="gone"
+                        android:textColor="@color/text_focused"
+                        android:singleLine="true"
+                        android:ellipsize="end"/>
+            </LinearLayout>
+            <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
+                    >
+                <ImageView
+                        android:id="@+id/state_icon"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_alignParentTop="true"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_new_focused"
+                        android:visibility="gone"/>
+                <ImageView
+                        android:id="@+id/download_icon"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_alignParentBottom="true"
+                        android:src="@drawable/ic_downloaded_focused"
+                        android:scaleType="centerInside"
+                        android:visibility="gone"/>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <ImageView
+                android:id="@+id/episode_divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:contentDescription="@string/divider"
+                android:scaleType="fitCenter"
+                android:src="@color/text_focused"
+                android:alpha=".5"
+                />
+
+        <!--  <LinearLayout
+                  android:layout_width="match_parent"
+                  android:layout_height="0dp"
+                  android:layout_weight="1"
+                  android:orientation="vertical"
+                  >-->
+
+        <WebView
+                android:id="@+id/episode_description"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:paddingLeft="10dp"
+                android:visibility="gone"
+                android:layerType="software"
+                />
+
+        <!--</LinearLayout>-->
+
+    </LinearLayout>
 
     <net.alliknow.podcatcher.view.ContextMenuView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
             android:id="@+id/context_menu"
             android:choiceMode="singleChoice"
             android:listSelector="@drawable/list_item_bg_focused_fragment"
@@ -60,89 +155,4 @@
             android:dividerHeight="1dp"
             />
 
-    <ImageView
-            android:id="@+id/logo"
-            android:layout_width="wrap_content"
-            android:layout_height="208dp"
-            android:layout_gravity="center_horizontal"
-            android:maxWidth="440dp"
-            android:visibility="gone"
-            />
-
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:baselineAligned="false"
-            android:orientation="horizontal">
-        <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-            <TextView
-                    android:id="@+id/episode_title"
-                    style="@style/PodcatcherTheme.Text.Title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="28dp"
-                    android:paddingLeft="@dimen/episode_view_padding"
-                    android:textColor="@color/text_info_color"
-                    android:visibility="gone"/>
-            <TextView
-                    android:id="@+id/podcast_title"
-                    style="@style/PodcatcherTheme.Text.Default"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="20dp"
-                    android:paddingLeft="@dimen/episode_view_padding"
-                    android:visibility="gone"
-                    android:textColor="@color/text_info_color"
-                    android:singleLine="true"
-                    android:ellipsize="end"/>
-        </LinearLayout>
-        <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-                >
-            <ImageView
-                    android:id="@+id/state_icon"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:layout_alignParentTop="true"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_new"
-                    android:visibility="gone"/>
-            <ImageView
-                    android:id="@+id/download_icon"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:layout_alignParentBottom="true"
-                    android:src="@drawable/ic_downloaded"
-                    android:scaleType="centerInside"
-                    android:visibility="gone"/>
-        </RelativeLayout>
-    </LinearLayout>
-
-    <ImageView
-            android:id="@+id/episode_divider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/divider"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:scaleType="fitCenter"
-            android:src="@android:drawable/divider_horizontal_bright"
-            android:visibility="gone"
-            />
-
-    <WebView
-            android:id="@+id/episode_description"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="5dp"
-            android:visibility="gone"
-            />
-
-</LinearLayout>
+</RelativeLayout>

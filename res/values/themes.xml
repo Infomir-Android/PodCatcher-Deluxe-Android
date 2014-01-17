@@ -1,3 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <style name="PodcatcherTheme" parent="android:Theme.Holo">
+        <item name="android:actionBarStyle">@style/PodcatcherTheme.ActionBar</item>
+        <item name="android:actionBarSize">80dp</item>
+        <item name="android:windowBackground">@drawable/background</item>
+
+        <item name="android:dialogTheme">@style/PodcatcherTheme.Dialog</item>
+        <item name="android:alertDialogTheme">@style/PodcatcherTheme.Dialog</item>
+        <!--<item name="android:alertDialogStyle">@style/PodcatcherTheme.AlertDialog</item>-->
+
+        <item name="*android:dialogTitleDecorLayout">@drawable/action_bar_divider</item>
+        <item name="android:windowContentOverlay">@null</item>
+
+        <item name="android:textAppearance">@style/PodcatcherTheme.TextAppearance</item>
+        <item name="android:textAppearanceLarge">@style/PodcatcherTheme.Text.Large</item>
+        <item name="android:textAppearanceSmall">@style/PodcatcherTheme.Text.Small</item>
+
+        <!-- Preference styles -->
+        <item name="android:preferenceStyle">@style/PodcatcherTheme.Preference</item>
+        <item name="*android:preferenceFrameLayoutStyle">@style/PodcatcherTheme.PreferenceFrameLayout</item>
+        <item name="*android:preferenceFragmentStyle">@style/PodcatcherTheme.PreferenceFragment</item>
+        <item name="android:checkBoxPreferenceStyle">@style/PodcatcherTheme.Preference.CheckBoxPreference</item>
+
+        <item name="android:textColorPrimary">@color/text_info_color</item>
+        <item name="android:textColorSecondary">@color/text_color</item>
+
+        <item name="android:checkboxStyle">@style/PodcatcherTheme.CheckBox</item>
+
+        <item name="android:selectableItemBackground">@drawable/dialog_item_bg</item>
+        <item name="android:listChoiceIndicatorMultiple">@drawable/ic_checkbox</item>
+    </style>
+
+    <style name="PodcatcherTheme.Dialog">
+
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:listPreferredItemPaddingLeft">16dip</item>
+        <item name="android:listPreferredItemPaddingRight">16dip</item>
+
+        <!-- Changed -->
+        <item name="android:windowBackground">@drawable/dialog_bg</item>
+        <item name="android:windowTitleStyle">@style/PodcatcherTheme.Dialog.Title</item>
+        <item name="*android:dialogTitleDecorLayout">@layout/dialog_title</item>
+        <item name="android:windowContentOverlay">@null</item>
+
+        <!--<item name="android:textAppearance">@style/PodcatcherTheme.Dialog.TextAppearance</item>-->
+        <item name="android:textAppearance">@style/PodcatcherTheme.Dialog.TextAppearance</item>
+        <item name="android:textAppearanceLarge">@style/PodcatcherTheme.Dialog.TextAppearance.Large</item>
+        <item name="android:textAppearanceMedium">@style/PodcatcherTheme.Dialog.TextAppearance</item>
+        <item name="android:textAppearanceSmall">@style/PodcatcherTheme.Dialog.TextAppearance.Small</item>
+
+        <item name="android:textColorPrimary">@color/dialog_text_color</item>
+        <item name="android:textColorSecondary">@color/dialog_text_color</item>
+        <item name="android:textColorTertiary">@color/dialog_text_category_color</item>
+
+        <item name="android:listViewStyle">@style/PodcatcherTheme.Dialog.ListViewStyle</item>
+        <item name="android:listViewWhiteStyle">@style/PodcatcherTheme.Dialog.ListViewStyle</item>
+
+        <item name="android:checkBoxPreferenceStyle">@style/PodcatcherTheme.Preference.CheckBoxPreference</item>
+        <item name="android:checkboxStyle">@style/PodcatcherTheme.CheckBox</item>
+
+        <!-- Views -->
+        <item name="android:editTextBackground">@drawable/edit_text_bg</item>
+        <item name="android:editTextColor">@color/text_focused</item>
+        <item name="android:buttonBarStyle">@style/PodcatcherTheme.ButtonBar</item>
+        <item name="android:buttonBarButtonStyle">@style/PodcatcherTheme.DialogButton</item>
+        <item name="android:borderlessButtonStyle">@style/PodcatcherTheme.DialogButton</item>
+        <item name="android:spinnerStyle">@style/PodcatcherTheme.Spinner</item>
+
+        <item name="android:popupWindowStyle">@style/PodcatcherTheme.Dialog.PopupWindow</item>
+        <item name="android:listPopupWindowStyle">@style/PodcatcherTheme.Dialog.PopupWindow</item>
+        <item name="android:popupMenuStyle">@style/PodcatcherTheme.Dialog.PopupWindow</item>
+
+        <item name="android:spinnerItemStyle">@style/PodcatcherTheme.SpinnerItem</item>
+        <item name="android:spinnerDropDownItemStyle">@style/PodcatcherTheme.DropDownItem</item>
+    </style>
+
+    <style name="PodcatcherTheme.NoDisplay" parent="android:Theme.NoDisplay">
+    </style>
+
 </resources>

@@ -67,6 +67,7 @@ public class AddPodcastFragment extends DialogFragment {
 
     @Override
     public void onAttach(Activity activity) {
+        setStyle(R.style.PodcatcherTheme_Dialog, R.style.PodcatcherTheme_Dialog);
         super.onAttach(activity);
 
         // Make sure our listener is present

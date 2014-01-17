@@ -24,16 +24,16 @@
         android:layout_height="match_parent"
         >
 
-    <LinearLayout
+    <AbsoluteLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
             android:id="@+id/move_me"
             >
 
         <LinearLayout
                 android:layout_width="@dimen/podcast_list_expanded_width"
                 android:layout_height="match_parent"
+                android:layout_x="0dp"
                 android:id="@+id/podcast_list_layout"
                 >
 
@@ -51,6 +51,7 @@
         <LinearLayout
                 android:layout_width="@dimen/episode_list_expanded_width"
                 android:layout_height="match_parent"
+                android:layout_x="@dimen/episode_list_x"
                 android:id="@+id/episode_list_layout"
                 >
 
@@ -68,8 +69,9 @@
         <!-- EPISODE -->
         <LinearLayout
                 android:id="@+id/episode_layout"
-                android:layout_width="440dp"
+                android:layout_width="640dp"
                 android:layout_height="match_parent"
+                android:layout_x="@dimen/episode_x"
                 android:orientation="vertical"
                 android:visibility="gone"
                 >
@@ -82,10 +84,9 @@
                     android:layout_height="match_parent"
                     />
 
-
         </LinearLayout>
 
-    </LinearLayout>
+    </AbsoluteLayout>
 
     <ImageView
             android:layout_width="50dp"
@@ -96,19 +97,19 @@
             android:id="@+id/more_button"
             />
 
-
     <!-- MAIN MENU -->
     <LinearLayout
-            android:layout_width="300dp"
+            android:layout_width="400dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:orientation="vertical"
             android:visibility="invisible"
             android:background="@color/menu_bg"
+            android:clickable="true"
             android:id="@+id/main_menu"
             >
 
-        <net.alliknow.podcatcher.view.ControllerView
+     <!--   <net.alliknow.podcatcher.view.ControllerView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -116,13 +117,24 @@
                 android:layout_marginBottom="10dp"
                 android:focusable="true"
                 android:id="@+id/controller_view"
-                />
+                />-->
 
-        <ListView
-                android:layout_width="300dp"
+        <net.alliknow.podcatcher.view.MenuPlayerView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:id="@+id/menu_player_view"
+            />
+
+        <net.alliknow.podcatcher.view.AnimatedListView
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:choiceMode="singleChoice"
                 android:listSelector="@drawable/list_item_bg_focused_fragment"
+                android:divider="@color/divider_color"
+                android:dividerHeight="1dp"
                 android:id="@+id/main_menu_list"
                 />
     </LinearLayout>
@@ -133,8 +145,11 @@
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:choiceMode="singleChoice"
-            android:visibility="invisible"
-            android:background="#EEEEEE"
+            android:visibility="gone"
+            android:listSelector="@drawable/list_item_bg_focused_fragment"
+            android:divider="@color/divider_color"
+            android:dividerHeight="1dp"
+            android:background="@color/menu_bg"
             android:id="@+id/podcast_context_menu"
             />
 

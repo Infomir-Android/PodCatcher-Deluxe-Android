@@ -60,4 +60,25 @@
     <color name="action_bar_bg_hovered">#33000000</color>                    <!-- 20% transparency -->
 
     <color name="menu_bg">#161a12</color>
+    <color name="hint_bg">#E71e320a</color>                                 <!-- 90% transparency -->
+
+    <color name="menu_seekbar_bg">#825b28</color>
+    <color name="menu_seekbar_thumb">#dece9c</color>
+
+    <color name="description_web_view_bg_unfocused">#AAFFFFFF</color>
+    <color name="description_web_view_bg_focused">#FFFFFF</color>
+
+    <color name="dialog_title_bg">#dece9c</color>
+    <color name="dialog_title_text">#161a12</color>
+    <color name="dialog_item_text_default">#161a12</color>
+    <color name="dialog_item_text_selected">#ed9c3e</color>
+    <color name="dialog_item_bg_default">@android:color/transparent</color>
+    <color name="dialog_item_bg_focused">#161a12</color>
+    <color name="dialog_list_divider">@color/dialog_item_text_default</color>
+    <color name="dialog_category_default">#626460</color>
+    <color name="dialog_category_focused">@color/text_default</color>
+
+    <color name="directory_button_light">#ed9c3e</color>
+    <color name="directory_button_dark">#161a12</color>
+
 </resources>

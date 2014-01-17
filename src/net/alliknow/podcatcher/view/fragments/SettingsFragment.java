@@ -17,12 +17,8 @@
 
 package net.alliknow.podcatcher.view.fragments;
 
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.view.View;
 import android.widget.BaseAdapter;
 
 import net.alliknow.podcatcher.R;
@@ -34,8 +30,7 @@ import java.io.File;
 /**
  * Fragment for settings.
  */
-public class SettingsFragment extends PreferenceFragment implements
-        OnSharedPreferenceChangeListener {
+public class SettingsFragment extends PreferenceFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,9 +38,6 @@ public class SettingsFragment extends PreferenceFragment implements
 
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
-        // Register this fragment to listen to preference changes
-        PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .registerOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -68,24 +60,7 @@ public class SettingsFragment extends PreferenceFragment implements
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(SettingsActivity.KEY_THEME_COLOR)) {
-            // Update the color preview widget since this is not done
-            // automatically by the color picker preference
-            final View previewColorView = getView().findViewById(R.id.color_preview);
-
-            if (previewColorView != null)
-                previewColorView.setBackgroundColor(sharedPreferences.getInt(key,
-                        getActivity().getResources().getColor(R.color.theme_dark)));
-        }
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
-
-        // Unregister this fragment
-        PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .unregisterOnSharedPreferenceChangeListener(this);
     }
 }

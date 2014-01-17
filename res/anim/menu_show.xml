@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <translate xmlns:android="http://schemas.android.com/apk/res/android"
-           android:fromXDelta="@integer/menu_width_delta"
+           android:fromXDelta="100%p"
            android:toXDelta="0"
            android:duration="@integer/menu_anim_duration"
            android:interpolator="@anim/menu_interpolator"

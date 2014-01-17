@@ -25,37 +25,57 @@
     android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/suggestions_filter_height"
         android:orientation="horizontal">
-        <Spinner
+        <net.alliknow.podcatcher.view.MySpinner
             android:id="@+id/suggestion_language_select"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:layout_weight="1" />
-        <Spinner
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="3dp"
+                />
+        <ImageView style="@style/PodcatcherTheme.DialogDivider.Vertical" />
+        <net.alliknow.podcatcher.view.MySpinner
             android:id="@+id/suggestion_genre_select"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:layout_weight="1" />
-        <Spinner
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="3dp"
+                />
+        <ImageView style="@style/PodcatcherTheme.DialogDivider.Vertical" />
+        <net.alliknow.podcatcher.view.MySpinner
             android:id="@+id/suggestion_type_select"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:layout_weight="1" />
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="3dp"
+                />
+        <ImageView style="@style/PodcatcherTheme.DialogDivider.Vertical" />
+        <Button
+                android:id="@+id/suggestion_send"
+                style="?android:buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:padding="3dp"
+                android:text="@string/suggestions_send"
+                />
     </LinearLayout>
     <net.alliknow.podcatcher.view.ProgressView
         android:id="@+id/suggestion_list_progress"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
+    <ImageView style="@style/PodcatcherTheme.DialogDivider.Horizontal" />
     <ListView
         android:id="@+id/suggestion_podcasts"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:layout_margin="10dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
         android:choiceMode="singleChoice"
         android:visibility="gone" />
     <TextView
@@ -67,19 +87,19 @@
         android:padding="20dp"
         android:text="@string/suggestions_none"
         android:visibility="gone" />
-    <ImageView
+    <!--<ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
         android:scaleType="fitXY"
         android:src="@android:drawable/divider_horizontal_bright"
-        android:contentDescription="@string/divider" />
-    <TextView
+        android:contentDescription="@string/divider" />-->
+   <!-- <TextView
         android:id="@+id/suggestion_send"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="3dp"
-        android:textSize="@dimen/font_size_default" />
+        android:textSize="@dimen/font_size_default" />-->
 </LinearLayout>
