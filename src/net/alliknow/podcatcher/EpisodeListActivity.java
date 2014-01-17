@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 
+import android.widget.BaseAdapter;
 import net.alliknow.podcatcher.listeners.OnEnterAuthorizationListener;
 import net.alliknow.podcatcher.listeners.OnLoadDownloadsListener;
 import net.alliknow.podcatcher.listeners.OnLoadPlaylistListener;

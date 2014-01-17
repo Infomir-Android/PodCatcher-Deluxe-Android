@@ -592,6 +592,10 @@ public class PodcastActivity extends EpisodeListActivity implements OnBackStackC
         // marshal it to the podcast list fragment
         podcastListFragment.onPodcastLogoLoaded(podcast);
 
+        if (podcast == selection.getPodcast()) {
+            episodeListFragment.onPodcastLogoLoaded();
+        }
+
 //        updateLogoViewMode();
     }
 

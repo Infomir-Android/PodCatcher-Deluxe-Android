@@ -49,6 +49,7 @@
         <ImageView style="@style/PodcatcherTheme.DialogDivider.Vertical" />
         <Button
             android:id="@+id/first_run_add_button"
+            style="?android:buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="2"

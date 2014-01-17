@@ -29,6 +29,7 @@ import net.alliknow.podcatcher.adapters.EpisodeListAdapter;
 import net.alliknow.podcatcher.listeners.*;
 import net.alliknow.podcatcher.model.tasks.remote.LoadPodcastTask.PodcastLoadError;
 import net.alliknow.podcatcher.model.types.Episode;
+import net.alliknow.podcatcher.model.types.Podcast;
 import net.alliknow.podcatcher.view.AnimatedListView;
 import net.alliknow.podcatcher.view.EpisodeListItemView;
 import net.alliknow.podcatcher.view.fragments.SwipeReorderListViewTouchListener.ReorderCallback;
@@ -285,6 +286,12 @@ public class EpisodeListFragment extends PodcatcherListFragment implements Reord
         super.onFocusChange(v, hasFocus);
         if (getListView().getAdapter() != null) {
             ((EpisodeListAdapter) getListView().getAdapter()).setShowSelected(!hasFocus);
+        }
+    }
+
+    public void onPodcastLogoLoaded() {
+        if (getListAdapter() != null) {
+            ((BaseAdapter) getListAdapter()).notifyDataSetChanged();
         }
     }
 
