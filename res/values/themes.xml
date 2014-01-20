@@ -70,6 +70,7 @@
         <!-- Views -->
         <item name="android:editTextBackground">@drawable/edit_text_bg</item>
         <item name="android:editTextColor">@color/text_focused</item>
+        <item name="android:editTextStyle">@style/PodcatcherTheme.EditText</item>
         <item name="android:buttonBarStyle">@style/PodcatcherTheme.ButtonBar</item>
         <item name="android:buttonBarButtonStyle">@style/PodcatcherTheme.DialogButton</item>
         <item name="android:borderlessButtonStyle">@style/PodcatcherTheme.DialogButton</item>

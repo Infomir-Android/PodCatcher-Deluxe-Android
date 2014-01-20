@@ -169,7 +169,7 @@ public class Podcatcher extends Application {
             // pass
         }
 
-        return debug;
+        return false;
     }
 
     private NetworkInfo getNetworkInfo() {

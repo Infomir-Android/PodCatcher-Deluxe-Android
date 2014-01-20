@@ -204,4 +204,8 @@
         <item name="android:maxHeight">300dp</item>
     </style>
 
+    <style name="PodcatcherTheme.EditText" parent="android:Widget.Holo.EditText">
+        <item name="android:textCursorDrawable">@drawable/ic_cursor</item>
+    </style>
+
 </resources>

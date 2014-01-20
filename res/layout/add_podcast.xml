@@ -29,6 +29,8 @@
             android:id="@+id/podcast_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:background="@drawable/edit_text_bg"
             android:hint="@string/podcast_enter_url_here"
             android:textColor="@color/dialog_item_text_default"
@@ -61,6 +63,17 @@
                 />
         <ImageView
                 style="@style/PodcatcherTheme.DialogDivider.Vertical"
+                />
+        <Button
+                android:id="@+id/import_opml_button"
+                style="@style/PodcatcherTheme.DialogButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="@string/opml_import"
+                />
+        <ImageView
+                style="@style/PodcatcherTheme.DialogDivider.Vertical"
             />
         <Button
                 android:id="@+id/podcast_add_button"
@@ -70,17 +83,6 @@
                 android:layout_weight="1"
                 android:layout_gravity="center_vertical"
                 android:text="@string/podcast_add_button"
-                />
-        <ImageView
-                style="@style/PodcatcherTheme.DialogDivider.Vertical"
-                />
-        <Button
-                android:id="@+id/import_opml_button"
-                style="@style/PodcatcherTheme.DialogButton"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:text="@string/opml_import"
                 />
     </LinearLayout>
 </LinearLayout>
