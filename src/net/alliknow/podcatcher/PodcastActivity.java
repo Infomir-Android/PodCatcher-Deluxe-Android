@@ -764,7 +764,7 @@ public class PodcastActivity extends EpisodeListActivity implements OnBackStackC
                     ExpandCollapseAnimation.DIRECTION_COLLAPSE,
                     episodeFragmentLayout
             );
-            expandCollapseAnimation.setDuration(0);
+            expandCollapseAnimation.setDuration(200);
             expandCollapseAnimation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
@@ -785,7 +785,7 @@ public class PodcastActivity extends EpisodeListActivity implements OnBackStackC
                 }
             });
 
-            ScrollAnimation scrollAnimation = new ScrollAnimation(
+            final ScrollAnimation scrollAnimation = new ScrollAnimation(
                     ScrollAnimation.DIRECTION_TO_LEFT,
                     podcastListWidth,
                     podcastListFragmentLayout, episodeListFragmentLayout, episodeFragmentLayout
@@ -795,6 +795,10 @@ public class PodcastActivity extends EpisodeListActivity implements OnBackStackC
                 public void onAnimationStart(Animation animation) {
                     episodeFragmentLayout.setVisibility(View.VISIBLE);
                     episodeFragment.focusOnMenu();
+
+                    // Notifying ListViews that they should not refresh their contents while being animated
+                    podcastListFragment.notifyAnimationStarted(scrollAnimation/*, expandCollapseAnimation*/);
+                    episodeListFragment.notifyAnimationStarted(scrollAnimation/*, expandCollapseAnimation*/);
                 }
 
                 @Override
@@ -809,13 +813,13 @@ public class PodcastActivity extends EpisodeListActivity implements OnBackStackC
                     podcastListFragment.notifyAnimationFinished(animation);
                     episodeListFragment.notifyAnimationFinished(animation);
 
-                    int delta = episodeListFragmentLayout.getLayoutParams().width;
-                    episodeListFragmentLayout.getLayoutParams().width = (int) getResources().getDimension(R.dimen.episode_list_collapsed_width);
-                    delta -= episodeListFragmentLayout.getLayoutParams().width;
-                    episodeListFragmentLayout.requestLayout();
-                    ((AbsoluteLayout.LayoutParams) episodeFragmentLayout.getLayoutParams()).x -= delta;
-                    episodeFragmentLayout.setLayoutParams(episodeFragmentLayout.getLayoutParams());
-                    episodeListFragmentLayout.startAnimation(expandCollapseAnimation);
+//                    int delta = episodeListFragmentLayout.getLayoutParams().width;
+//                    episodeListFragmentLayout.getLayoutParams().width = (int) getResources().getDimension(R.dimen.episode_list_collapsed_width);
+//                    delta -= episodeListFragmentLayout.getLayoutParams().width;
+//                    episodeListFragmentLayout.requestLayout();
+//                    ((AbsoluteLayout.LayoutParams) episodeFragmentLayout.getLayoutParams()).x -= delta;
+//                    episodeFragmentLayout.setLayoutParams(episodeFragmentLayout.getLayoutParams());
+//                    episodeListFragmentLayout.startAnimation(expandCollapseAnimation);
                 }
 
                 @Override
@@ -824,13 +828,17 @@ public class PodcastActivity extends EpisodeListActivity implements OnBackStackC
             });
             scrollAnimation.setDuration(duration);
 
+            int delta = episodeListFragmentLayout.getLayoutParams().width;
+            episodeListFragmentLayout.getLayoutParams().width = (int) getResources().getDimension(R.dimen.episode_list_collapsed_width);
+            delta -= episodeListFragmentLayout.getLayoutParams().width;
+            episodeListFragmentLayout.requestLayout();
+            AbsoluteLayout.LayoutParams params = ((AbsoluteLayout.LayoutParams) episodeFragmentLayout.getLayoutParams());
+            params.x -= delta;
+            episodeFragmentLayout.setLayoutParams(params);
+
             // Locking animations to prevent them from interrupting each other
             locker.addAnimationLock(scrollAnimation);
 //            locker.addAnimationLock(expandCollapseAnimation);
-
-            // Notifying ListViews that they should not refresh their contents while being animated
-            podcastListFragment.notifyAnimationStarted(scrollAnimation/*, expandCollapseAnimation*/);
-            episodeListFragment.notifyAnimationStarted(scrollAnimation/*, expandCollapseAnimation*/);
 
             // starting...
             podcastListFragmentLayout.startAnimation(scrollAnimation);
@@ -861,7 +869,7 @@ public class PodcastActivity extends EpisodeListActivity implements OnBackStackC
                     ExpandCollapseAnimation.DIRECTION_EXPAND,
                     episodeFragmentLayout
             );
-            expandCollapseAnimation.setDuration(0);
+            expandCollapseAnimation.setDuration(200);
             expandCollapseAnimation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
@@ -882,7 +890,7 @@ public class PodcastActivity extends EpisodeListActivity implements OnBackStackC
                 }
             });
 
-            ScrollAnimation scrollAnimation = new ScrollAnimation(
+            final ScrollAnimation scrollAnimation = new ScrollAnimation(
                     ScrollAnimation.DIRECTION_TO_RIGHT,
                     podcastListWidth,
                     episodeFragmentLayout,
@@ -895,6 +903,10 @@ public class PodcastActivity extends EpisodeListActivity implements OnBackStackC
                 @Override
                 public void onAnimationStart(Animation animation) {
                     episodeFragmentShown = false;
+
+                    // Notifying ListViews that they should not refresh their contents while being animated
+                    podcastListFragment.notifyAnimationStarted(scrollAnimation/*, expandCollapseAnimation*/);
+                    episodeListFragment.notifyAnimationStarted(scrollAnimation/*, expandCollapseAnimation*/);
                 }
 
                 @Override
@@ -910,13 +922,13 @@ public class PodcastActivity extends EpisodeListActivity implements OnBackStackC
                     podcastListFragment.notifyAnimationFinished(animation);
                     episodeListFragment.notifyAnimationFinished(animation);
 
-                    episodeListFragmentLayout.startAnimation(expandCollapseAnimation);
-                    int delta = episodeListFragmentLayout.getLayoutParams().width;
-                    episodeListFragmentLayout.getLayoutParams().width = (int) getResources().getDimension(R.dimen.episode_list_expanded_width);
-                    delta -= episodeListFragmentLayout.getLayoutParams().width;
-                    episodeListFragmentLayout.requestLayout();
-                    ((AbsoluteLayout.LayoutParams) episodeFragmentLayout.getLayoutParams()).x -= delta;
-                    episodeFragmentLayout.setLayoutParams(episodeFragmentLayout.getLayoutParams());
+//                    episodeListFragmentLayout.startAnimation(expandCollapseAnimation);
+//                    int delta = episodeListFragmentLayout.getLayoutParams().width;
+//                    episodeListFragmentLayout.getLayoutParams().width = (int) getResources().getDimension(R.dimen.episode_list_expanded_width);
+//                    delta -= episodeListFragmentLayout.getLayoutParams().width;
+//                    episodeListFragmentLayout.requestLayout();
+//                    ((AbsoluteLayout.LayoutParams) episodeFragmentLayout.getLayoutParams()).x -= delta;
+//                    episodeFragmentLayout.setLayoutParams(episodeFragmentLayout.getLayoutParams());
                 }
 
                 @Override
@@ -924,13 +936,16 @@ public class PodcastActivity extends EpisodeListActivity implements OnBackStackC
                 }
             });
 
+            int delta = episodeListFragmentLayout.getLayoutParams().width;
+            episodeListFragmentLayout.getLayoutParams().width = (int) getResources().getDimension(R.dimen.episode_list_expanded_width);
+            delta -= episodeListFragmentLayout.getLayoutParams().width;
+            episodeListFragmentLayout.requestLayout();
+            ((AbsoluteLayout.LayoutParams) episodeFragmentLayout.getLayoutParams()).x -= delta;
+            episodeFragmentLayout.setLayoutParams(episodeFragmentLayout.getLayoutParams());
+
             // Locking animations to prevent them from interrupting each other
             locker.addAnimationLock(scrollAnimation);
 //            locker.addAnimationLock(expandCollapseAnimation);
-
-            // Notifying ListViews that they should not refresh their contents while being animated
-            podcastListFragment.notifyAnimationStarted(scrollAnimation/*, expandCollapseAnimation*/);
-            episodeListFragment.notifyAnimationStarted(scrollAnimation/*, expandCollapseAnimation*/);
 
             // starting animations...
             episodeListFragmentLayout.startAnimation(scrollAnimation);
@@ -1088,12 +1103,12 @@ public class PodcastActivity extends EpisodeListActivity implements OnBackStackC
             Animation appearAnimation = AnimationUtils.loadAnimation(PodcastActivity.this, R.anim.appear);
             appearAnimation.setDuration(animation.getDuration());
 
-            playerView.setAnimation(appearAnimation);
+            playerView.startAnimation(appearAnimation);
             playerView.setVisibility(View.VISIBLE);
 
             // notifying ListViews not to update while being animated
             lvMenu.notifyAnimationStarted(animation);
-            layout.setAnimation(animation);
+            layout.startAnimation(animation);
 
             lvMenu.setEnabled(false);
             layout.setOnFocusChangeListener(null);
